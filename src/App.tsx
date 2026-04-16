@@ -19,53 +19,7 @@ import {
 } from 'lucide-react';
 
 // --- DATA SOURCE ---
-// Easy to replace with real data
-const employeeData = [
-  {
-    "Employee Number": "EMP001",
-    "Employee Name": "Ahmed Mohamed",
-    "Email Address": "ahmed.mohamed@evapharma.com",
-    "Division": "Sales",
-    "Unit": "Cardiology",
-    "Job": "Medical Representative",
-    "Title": "Medical Representative",
-    "Wave": "AP20 - W1",
-    "Team": "Mushroom 1"
-  },
-  {
-    "Employee Number": "EMP002",
-    "Employee Name": "Sarah Johnson",
-    "Email Address": "sarah.johnson@evapharma.com",
-    "Division": "Marketing",
-    "Unit": "Digital Health",
-    "Job": "Marketing Manager",
-    "Title": "Senior Marketing Manager",
-    "Wave": "AP20 - W2",
-    "Team": "Falcon 3"
-  },
-  {
-    "Employee Number": "EMP003",
-    "Employee Name": "Peter Ramsis",
-    "Email Address": "peter.ramsis@evapharma.com",
-    "Division": "Operations",
-    "Unit": "Supply Chain",
-    "Job": "Logistics Coordinator",
-    "Title": "Lead Logistics Coordinator",
-    "Wave": "AP21 - W1",
-    "Team": "Eagle 1"
-  },
-  {
-    "Employee Number": "EMP004",
-    "Employee Name": "Mona Ali",
-    "Email Address": "mona.ali@evapharma.com",
-    "Division": "HR",
-    "Unit": "Talent Acquisition",
-    "Job": "Recruiter",
-    "Title": "Senior Talent Partner",
-    "Wave": "AP21 - W2",
-    "Team": "Phoenix 2"
-  }
-];
+import employeeData from './data/employees.json';
 
 type Employee = typeof employeeData[0];
 
@@ -201,7 +155,7 @@ export default function App() {
 
               <p className="text-center text-slate-400 text-xs mt-8">
                 &copy; 2026 Eva Pharma. All rights reserved. <br/>
-                Version 1.0.001
+                Version 1.0.002
               </p>
             </div>
           </motion.div>
@@ -330,7 +284,7 @@ export default function App() {
 
             <footer className="max-w-5xl mx-auto px-4 mt-12 pt-8 border-t border-slate-200 text-center">
               <p className="text-slate-400 text-sm">
-                Eva Pharma Employee Wave Portal &bull; Version 1.0.001
+                Eva Pharma Employee Wave Portal &bull; Version 1.0.002
               </p>
             </footer>
           </motion.div>

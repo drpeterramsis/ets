@@ -11,7 +11,7 @@ A professional, secure employee dashboard built with React, Tailwind CSS, and Fr
 - **Lucide Icons**: High-quality vector icons for a professional look.
 
 ## Data Structure
-The application uses a centralized `employeeData` array in `src/App.tsx`. Each employee object contains:
+The application uses an external JSON file located at `src/data/employees.json`. Each employee object contains:
 - Employee Number
 - Employee Name
 - Email Address
@@ -30,6 +30,10 @@ The application uses a centralized `employeeData` array in `src/App.tsx`. Each e
 - **Icons**: Lucide React
 
 ## Version History
+### v1.0.002
+- Separated employee data into an external JSON file (`src/data/employees.json`) for easier management.
+- Updated version numbering across the application.
+
 ### v1.0.001
 - Initial release with core login and dashboard functionality.
 - Implemented session persistence.
