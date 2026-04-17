@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useRef } from 'react';
-import { ChevronRight, Waves, Crown, Users, ArrowLeft } from 'lucide-react';
+import { ChevronRight, Waves, Crown, Users, ArrowLeft, Building } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import type { Employee } from '../types';
 import { getTeamIcon } from '../App';
@@ -229,6 +229,7 @@ export const DrillDown = ({ data }: DrillDownProps) => {
                      <h4 className="font-black text-lg leading-tight text-[var(--text-primary)]">{m["Employee Name"]}</h4>
                    </div>
                    <div className="space-y-1 text-xs font-bold leading-relaxed">
+                     <p><span className="text-[var(--accent-color)]">Division:</span> <span className="text-[var(--text-primary)] dark:text-white">{m.Division}</span></p>
                      <p><span className="text-[var(--accent-color)]">Unit:</span> <span className="text-[var(--text-primary)] dark:text-white">{m.Unit}</span></p>
                      <p><span className="text-[var(--accent-color)]">Title:</span> <span className="text-[var(--text-primary)] dark:text-white">{m.Title}</span></p>
                      <p><span className="text-[var(--accent-color)]">ID:</span> <span className="text-[var(--text-primary)] dark:text-white">{m["Employee Number"]}</span></p>

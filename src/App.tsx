@@ -9,6 +9,7 @@ import {
   LogOut, 
   User as UserIcon, 
   Building2, 
+  Building,
   Briefcase, 
   Waves, 
   Users, 
@@ -337,8 +338,13 @@ export default function App() {
                            </h3>
                            <div className="flex flex-wrap items-center justify-center md:justify-start gap-x-4 gap-y-1">
                               <span className="flex items-center gap-1.5 text-[13px] font-medium text-[var(--text-secondary)]">
+                                 <Building className="w-3.5 h-3.5" /> {user.Division}
+                              </span>
+                              <span className="md:inline hidden text-[rgba(255,192,0,0.4)]">·</span>
+                              <span className="flex items-center gap-1.5 text-[13px] font-medium text-[var(--text-secondary)]">
                                  <Building2 className="w-3.5 h-3.5" /> {user.Unit}
                               </span>
+                              <span className="md:inline hidden text-[rgba(255,192,0,0.4)]">·</span>
                               <span className="flex items-center gap-1.5 text-[13px] font-medium text-[var(--text-secondary)]">
                                  <Briefcase className="w-3.5 h-3.5" /> {user.Title}
                               </span>
@@ -347,9 +353,9 @@ export default function App() {
                      </div>
 
                      {/* ROW 2 — INFO CARDS */}
-                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 w-full">
+                     <div className="flex flex-col md:flex-row gap-2.5 md:gap-3 w-full">
                         {/* KINGDOM */}
-                        <div className="flex-1 bg-[#ffc000]/7 border border-[#ffc000]/30 rounded-xl px-4 py-3.5 flex flex-col items-center justify-center text-center h-full">
+                        <div className="flex-1 bg-[#ffc000]/7 border border-[#ffc000]/30 rounded-xl px-4 py-3 flex flex-col items-center justify-center text-center h-full sm:py-3.5">
                             <div className="flex items-center justify-center gap-1 text-[#ffc000] text-[10px] font-semibold uppercase tracking-[0.12em] mb-1">
                                 <span>🏰</span> KINGDOM
                             </div>
@@ -357,7 +363,7 @@ export default function App() {
                         </div>
 
                         {/* WAVE DATE */}
-                        <div className="flex-1 bg-[#ffc000]/7 border border-[#ffc000]/30 rounded-xl px-4 py-3.5 flex flex-col items-center justify-center text-center h-full">
+                        <div className="flex-1 bg-[#ffc000]/7 border border-[#ffc000]/30 rounded-xl px-4 py-3 flex flex-col items-center justify-center text-center h-full sm:py-3.5">
                             <div className="flex items-center justify-center gap-1 text-[#ffc000] text-[10px] font-semibold uppercase tracking-[0.12em] mb-1">
                                 <span>📅</span> WAVE DATE
                             </div>
@@ -367,7 +373,7 @@ export default function App() {
                         </div>
 
                         {/* WAVE TIME */}
-                        <div className="flex-1 bg-[#ffc000]/7 border border-[#ffc000]/30 rounded-xl px-4 py-3.5 flex flex-col items-center justify-center text-center h-full">
+                        <div className="flex-1 bg-[#ffc000]/7 border border-[#ffc000]/30 rounded-xl px-4 py-3 flex flex-col items-center justify-center text-center h-full sm:py-3.5">
                             <div className="flex items-center justify-center gap-1 text-[#ffc000] text-[10px] font-semibold uppercase tracking-[0.12em] mb-1">
                                 <span>⏰</span> WAVE TIME
                             </div>
@@ -377,7 +383,7 @@ export default function App() {
                         </div>
 
                         {/* TACTICAL TEAM */}
-                        <div className="flex-1 bg-[#ffc000]/7 border border-[#ffc000]/30 rounded-xl px-4 py-3.5 flex flex-col items-center justify-center text-center h-full">
+                        <div className="flex-1 bg-[#ffc000]/7 border border-[#ffc000]/30 rounded-xl px-4 py-3 flex flex-col items-center justify-center text-center h-full sm:py-3.5">
                             <div className="flex items-center justify-center gap-1 text-[#ffc000] text-[10px] font-semibold uppercase tracking-[0.12em] mb-1">
                                 <span>👥</span> TACTICAL TEAM
                             </div>

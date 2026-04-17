@@ -1,4 +1,4 @@
-# Employee Wave Portal (v1.0.007)
+# Employee Wave Portal (v1.0.008)
 
 A professional, secure employee dashboard built with React, Tailwind CSS, and Framer Motion. This application allows employees to sign in using their email and employee number to view their current wave assignment and team details.
 
@@ -30,6 +30,17 @@ The application uses an external JSON file located at `src/data/employees.json`.
 - **Icons**: Lucide React
 
 ## Version History
+v1.0.008 - Division added to employee profile card,
+           Division added to drill-down member cards,
+           Logout button made smaller and subtle,
+           Mobile info cards changed to single column,
+           No 2x2 grid on mobile anymore
+
+### v1.0.010
+- **Fixed Footer Syntax**: Resolved JSX errors caused by unclosed `<br>` tags.
+- **Organization Branding**: Updated footer credit to "Under Supervision of Training Department".
+- **Superuser ID Update**: Manually updated Superuser list (4639).
+
 ### v1.0.007
 - Profile card split into 2 rows (identity row + info cards row)
 - Name no longer collapses on desktop
