@@ -28,7 +28,8 @@ import {
   Map as MapIcon,
   MapPin
 } from 'lucide-react';
-import { SeatingMap } from './components/SeatingMap';
+import { SeatingMap } from './pages/SeatingMap';
+import { WaveStats } from './pages/WaveStats';
 
 // Data and Types
 import employeeData from './data/employees.json';
@@ -92,7 +93,7 @@ export default function App() {
   const [foundEmployee, setFoundEmployee] = useState<Employee | null>(null);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'drill' | 'search' | 'map'>('map');
+  const [activeTab, setActiveTab] = useState<'drill' | 'search' | 'map' | 'stats'>('map');
   
   // New States
   const [employees, setEmployees] = useState<Employee[]>(employeeData as Employee[]);
@@ -133,26 +134,6 @@ export default function App() {
       } catch (e) {
         localStorage.removeItem('evaSession');
       }
-    }
-    
-    // Auto Deduplication
-    const rawData = employeeData as Employee[];
-    const seen = new Map();
-    let hasDuplicates = false;
-    rawData.forEach(emp => {
-      if (!seen.has(emp["Employee Number"])) {
-        seen.set(emp["Employee Number"], emp);
-      } else {
-        hasDuplicates = true;
-      }
-    });
-    
-    if (hasDuplicates) {
-      const deduplicatedEmployees = Array.from(seen.values());
-      console.warn("⚠️ Duplicates removed:", rawData.length - deduplicatedEmployees.length);
-      setEmployees(deduplicatedEmployees as Employee[]);
-      saveToGitHub(deduplicatedEmployees as Employee[]).catch(console.error);
-      setToast({ message: `⚠️ ${rawData.length - deduplicatedEmployees.length} duplicate records auto-removed`, type: 'success' });
     }
     
     setIsLoading(false);
@@ -703,6 +684,10 @@ export default function App() {
                              <DrillDown data={employees} onEdit={openEditModal} onDelete={openDeleteModal} userRole={user.role} />
                           </div>
                        </motion.div>
+                      ) : activeTab === 'stats' ? (
+                        <motion.div key="stats" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
+                          <WaveStats employees={employees} />
+                        </motion.div>
                     ) : (
                       <motion.div key="search" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
                           <div className="space-y-6">
