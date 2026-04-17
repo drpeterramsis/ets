@@ -968,8 +968,14 @@ export default function App() {
 
       {/* Duplicate Review Modal */}
       {isDuplicateModalOpen && (
-        <div className="fixed inset-0 z-[9999] bg-black/75 flex items-center justify-center p-4">
-          <div className="bg-[var(--bg-card)] border border-[#ffc000] rounded-2xl p-8 w-full max-w-[620px] max-h-[85vh] overflow-y-auto shadow-[0_20px_60px_rgba(0,0,0,0.5)] custom-scrollbar">
+        <div 
+          className="fixed inset-0 z-[9999] bg-black/75 flex items-center justify-center p-4"
+          onClick={() => setIsDuplicateModalOpen(false)}
+        >
+          <div 
+            className="bg-[var(--bg-card)] border border-[#ffc000] rounded-2xl p-8 w-full max-w-[620px] max-h-[85vh] overflow-y-auto shadow-[0_20px_60px_rgba(0,0,0,0.5)] custom-scrollbar"
+            onClick={(e) => e.stopPropagation()}
+          >
              <div className="flex items-center gap-2 mb-2">
                  <span className="text-2xl">🧹</span>
                  <h2 className="text-[#ffc000] font-display text-[20px] font-bold">Duplicate Records Found</h2>
@@ -988,25 +994,25 @@ export default function App() {
                            return (
                              <div 
                                key={idx}
-                               onClick={() => setDuplicateSelections({ ...duplicateSelections, [id]: idx })}
+                               onClick={() => setDuplicateSelections({ ...duplicateSelections, [id]: isSelected ? -1 : idx })}
                                className={`flex items-center gap-3 p-2.5 rounded-lg border-2 cursor-pointer transition-all ${isSelected ? 'border-[#ffc000] bg-[rgba(255,192,0,0.12)] dark:bg-[rgba(255,192,0,0.08)]' : 'border-[rgba(255,255,255,0.08)] bg-transparent'}`}
                              >
                                <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${isSelected ? 'border-[#ffc000] bg-[#ffc000]' : 'border-[#888888]'}`}>
                                   {isSelected && <div className="w-1.5 h-1.5 rounded-full bg-black"></div>}
                                </div>
-                               <div className="flex-1 min-w-0">
-                                  <div className="font-bold text-[14px] text-black dark:text-white truncate">
+                               <div className="flex-1">
+                                  <div className="font-bold text-[14px] text-black dark:text-white">
                                     {emp["Employee Name"]}
                                   </div>
-                                  <div className="text-[11px] text-[#888888] truncate mt-0.5">
+                                  <div className="text-[11px] text-[#888888] mt-0.5">
                                     {emp.Division} • {emp.Unit} • {emp.Title}
                                   </div>
-                                  <div className="text-[11px] text-[#888888] truncate">
+                                  <div className="text-[11px] text-[#888888]">
                                     {emp.Wave} • 🏰 {emp.Kingdom} • Team {emp.Team}
                                   </div>
                                </div>
                                <div className="text-[10px] text-[#888888] bg-[rgba(255,255,255,0.05)] rounded px-2 py-0.5 flex-shrink-0">
-                                 Record {idx + 1}
+                                 {isSelected ? '✓ Selected to Keep' : `Record ${idx + 1}`}
                                </div>
                              </div>
                            );
@@ -1036,6 +1042,7 @@ export default function App() {
           </div>
         </div>
       )}
+[diff_block_end]
     </div>
   );
 }

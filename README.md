@@ -40,6 +40,7 @@ The application uses an external JSON file located at `src/data/employees.json`.
 4. Token needs Contents: Read & Write permission
 
 ## Version History
+v1.0.021 - Improved Duplicate Modal: click-outside to close, fully visible details, and toggleable selection
 v1.0.020 - Seating Map visible to Employee, Superuser, Facilitator
            Employee & Superuser: map limited to their own wave (no selector)
            Facilitator: map supports all waves with wave selector

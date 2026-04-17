@@ -13,7 +13,7 @@ export const Footer = ({ onLogout, showLogout }: FooterProps) => {
       </div>
 
       <div className="text-[11px] text-[rgba(255,192,0,0.4)] font-medium">
-        v1.0.020
+        v1.0.021
       </div>
 
       <div className="flex items-center">
