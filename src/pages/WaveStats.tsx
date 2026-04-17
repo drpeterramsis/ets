@@ -55,6 +55,20 @@ export const WaveStats: React.FC<WaveStatsProps> = ({ employees }) => {
     <div className="p-4 space-y-8">
       <h2 className="text-2xl font-bold text-[#ffc000]">📊 Wave Statistics</h2>
       
+      {/* TOTAL EMPLOYEES CARD */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+        <div className="bg-white dark:bg-[#1a1a1a] border border-[#ffc000]/20 rounded-2xl p-6 shadow-sm flex flex-col items-center justify-center relative overflow-hidden group transition-all hover:border-[#ffc000]/50">
+          <div className="absolute top-0 right-0 p-8 bg-[#ffc000]/5 rounded-full -mr-8 -mt-8 transition-transform group-hover:scale-125" />
+          <p className="text-[#888888] text-[9px] uppercase tracking-[0.3em] font-black mb-1">System Records</p>
+          <p className="text-5xl font-black text-black dark:text-white tracking-tighter">
+            {employees.length}
+          </p>
+          <div className="flex items-center gap-1 mt-1 text-[#ffc000]">
+            <span className="text-[9px] font-bold uppercase tracking-widest">Registered Employees</span>
+          </div>
+        </div>
+      </div>
+
       {/* SECTION A */}
       <div>
         <h3 className="font-bold text-lg mb-4">Summary by Wave</h3>
