@@ -97,6 +97,12 @@ export default function App() {
   const [editingMember, setEditingMember] = useState<Employee | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deletingMember, setDeletingMember] = useState<Employee | null>(null);
+  
+  // Deduplication States
+  const [isDuplicateModalOpen, setIsDuplicateModalOpen] = useState(false);
+  const [duplicateGroups, setDuplicateGroups] = useState<[string, Employee[]][]>([]);
+  const [duplicateSelections, setDuplicateSelections] = useState<Record<string, number>>({});
+
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'loading' } | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [formData, setFormData] = useState({
@@ -124,6 +130,26 @@ export default function App() {
       } catch (e) {
         localStorage.removeItem('evaSession');
       }
+    }
+    
+    // Auto Deduplication
+    const rawData = employeeData as Employee[];
+    const seen = new Map();
+    let hasDuplicates = false;
+    rawData.forEach(emp => {
+      if (!seen.has(emp["Employee Number"])) {
+        seen.set(emp["Employee Number"], emp);
+      } else {
+        hasDuplicates = true;
+      }
+    });
+    
+    if (hasDuplicates) {
+      const deduplicatedEmployees = Array.from(seen.values());
+      console.warn("⚠️ Duplicates removed:", rawData.length - deduplicatedEmployees.length);
+      setEmployees(deduplicatedEmployees as Employee[]);
+      saveToGitHub(deduplicatedEmployees as Employee[]).catch(console.error);
+      setToast({ message: `⚠️ ${rawData.length - deduplicatedEmployees.length} duplicate records auto-removed`, type: 'success' });
     }
     
     setIsLoading(false);
@@ -286,6 +312,64 @@ export default function App() {
       // Revert if failed
       setEmployees(employees);
       closeDeleteModal();
+    }
+  };
+
+  const handleCleanDuplicates = () => {
+    const groups: Map<string, Employee[]> = new Map();
+    employees.forEach(emp => {
+      const id = emp["Employee Number"];
+      if (!groups.has(id)) {
+         groups.set(id, []);
+      }
+      groups.get(id)!.push(emp);
+    });
+
+    const dupes = Array.from(groups.entries()).filter(([id, arr]) => arr.length > 1);
+    
+    if (dupes.length === 0) {
+      showToast("✅ No duplicates found. Data is clean!", "success");
+      return;
+    }
+    
+    setDuplicateGroups(dupes);
+    
+    const initialKeep: Record<string, number> = {};
+    dupes.forEach(([id]) => {
+      initialKeep[id] = 0;
+    });
+    setDuplicateSelections(initialKeep);
+    
+    setIsDuplicateModalOpen(true);
+  };
+
+  const confirmCleanDuplicates = async () => {
+    setIsSaving(true);
+    showToast('Saving to GitHub...', 'loading');
+    
+    const duplicateIds = new Set(duplicateGroups.map(g => g[0]));
+    
+    const cleanedEmployees = employees.filter(emp => {
+      const id = emp["Employee Number"];
+      if (duplicateIds.has(id)) {
+        const group = duplicateGroups.find(g => g[0] === id)![1];
+        const selectedIndex = duplicateSelections[id];
+        return emp === group[selectedIndex];
+      }
+      return true;
+    });
+    
+    setEmployees(cleanedEmployees);
+    const result = await saveToGitHub(cleanedEmployees);
+    setIsSaving(false);
+    
+    if (result.success) {
+      showToast(`✅ Duplicates removed. Data cleaned!`, "success");
+      setIsDuplicateModalOpen(false);
+    } else {
+      showToast("❌ Failed to save. Please try again.", "error");
+      setEmployees(employees); // Revert
+      setIsDuplicateModalOpen(false);
     }
   };
 
@@ -586,13 +670,19 @@ export default function App() {
 
                {/* Feature Tabs */}
                {(user.role === 'facilitator' || user.role === 'superuser') && (
-                 <div className="min-h-[400px]">
-                    <div className="mb-4">
+                   <div className="min-h-[400px]">
+                    <div className="mb-4 flex gap-3 flex-wrap">
                       <button 
                         onClick={openAddModal}
                         className="flex items-center gap-2 px-[22px] py-[10px] bg-transparent border border-[#ffc000] rounded-full text-[#ffc000] font-display font-semibold text-[14px] hover:bg-[#ffc000]/10 transition-all cursor-pointer"
                       >
                         <UserPlus className="w-4 h-4" /> + Add New Member
+                      </button>
+                      <button 
+                        onClick={handleCleanDuplicates}
+                        className="flex items-center gap-2 px-[22px] py-[10px] bg-transparent border border-[rgba(239,68,68,0.4)] rounded-full text-[#ef4444] font-display font-semibold text-[14px] hover:bg-[rgba(239,68,68,0.08)] hover:border-[#ef4444] transition-all cursor-pointer"
+                      >
+                        🧹 Clean Duplicates
                       </button>
                     </div>
                     <AnimatePresence mode="wait">
@@ -613,7 +703,7 @@ export default function App() {
                                 <h3 className="text-xl font-display font-black tracking-tight">Database Search</h3>
                                 <p className="text-sm text-[var(--text-secondary)]">Search across all employee records with specific filters.</p>
                              </div>
-                             <SearchEngine data={employees} />
+                             <SearchEngine data={employees} onEdit={openEditModal} onDelete={openDeleteModal} userRole={user.role} />
                           </div>
                       </motion.div>
                     )}
@@ -849,6 +939,77 @@ export default function App() {
                 {isSaving ? 'Deleting...' : 'Yes, Delete'}
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Duplicate Review Modal */}
+      {isDuplicateModalOpen && (
+        <div className="fixed inset-0 z-[9999] bg-black/75 flex items-center justify-center p-4">
+          <div className="bg-[var(--bg-card)] border border-[#ffc000] rounded-2xl p-8 w-full max-w-[620px] max-h-[85vh] overflow-y-auto shadow-[0_20px_60px_rgba(0,0,0,0.5)] custom-scrollbar">
+             <div className="flex items-center gap-2 mb-2">
+                 <span className="text-2xl">🧹</span>
+                 <h2 className="text-[#ffc000] font-display text-[20px] font-bold">Duplicate Records Found</h2>
+             </div>
+             <p className="text-[13px] text-[#888888] mb-6">
+                {duplicateGroups.length} duplicate IDs detected. Choose which record to KEEP for each.
+             </p>
+             
+             <div className="space-y-4">
+               {duplicateGroups.map(([id, group]) => (
+                  <div key={id} className="border border-[rgba(255,192,0,0.2)] rounded-xl p-4 bg-[rgba(0,0,0,0.02)] dark:bg-[rgba(255,255,255,0.02)]">
+                     <h3 className="text-[12px] font-bold text-[#ffc000] mb-3">ID: {id} — {group.length} copies found</h3>
+                     <div className="space-y-2">
+                        {group.map((emp, idx) => {
+                           const isSelected = duplicateSelections[id] === idx;
+                           return (
+                             <div 
+                               key={idx}
+                               onClick={() => setDuplicateSelections({ ...duplicateSelections, [id]: idx })}
+                               className={`flex items-center gap-3 p-2.5 rounded-lg border-2 cursor-pointer transition-all ${isSelected ? 'border-[#ffc000] bg-[rgba(255,192,0,0.12)] dark:bg-[rgba(255,192,0,0.08)]' : 'border-[rgba(255,255,255,0.08)] bg-transparent'}`}
+                             >
+                               <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${isSelected ? 'border-[#ffc000] bg-[#ffc000]' : 'border-[#888888]'}`}>
+                                  {isSelected && <div className="w-1.5 h-1.5 rounded-full bg-black"></div>}
+                               </div>
+                               <div className="flex-1 min-w-0">
+                                  <div className="font-bold text-[14px] text-black dark:text-white truncate">
+                                    {emp["Employee Name"]}
+                                  </div>
+                                  <div className="text-[11px] text-[#888888] truncate mt-0.5">
+                                    {emp.Division} • {emp.Unit} • {emp.Title}
+                                  </div>
+                                  <div className="text-[11px] text-[#888888] truncate">
+                                    {emp.Wave} • 🏰 {emp.Kingdom} • Team {emp.Team}
+                                  </div>
+                               </div>
+                               <div className="text-[10px] text-[#888888] bg-[rgba(255,255,255,0.05)] rounded px-2 py-0.5 flex-shrink-0">
+                                 Record {idx + 1}
+                               </div>
+                             </div>
+                           );
+                        })}
+                     </div>
+                  </div>
+               ))}
+             </div>
+             
+             <div className="flex flex-row justify-between mt-6">
+                <button 
+                  onClick={() => setIsDuplicateModalOpen(false)}
+                  className="bg-transparent border border-[#ffc000]/40 text-[#ffc000] rounded-lg px-6 py-2.5 hover:bg-[#ffc000]/10 transition-colors"
+                  disabled={isSaving}
+                >
+                  Cancel
+                </button>
+                <button 
+                  onClick={confirmCleanDuplicates}
+                  className="flex items-center gap-2 bg-[#ffc000] text-black font-bold rounded-lg px-6 py-2.5 hover:bg-[#e6ac00] transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+                  disabled={isSaving}
+                >
+                  <Trash2 className="w-4 h-4" />
+                  {isSaving ? 'Saving...' : 'Keep Selected & Remove Duplicates'}
+                </button>
+             </div>
           </div>
         </div>
       )}

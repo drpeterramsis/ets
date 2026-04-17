@@ -1,14 +1,17 @@
 import { useState, useMemo } from 'react';
-import { Search as SearchIcon, X, Filter } from 'lucide-react';
+import { Search as SearchIcon, X, Filter, Pencil, Trash2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import type { Employee } from '../types';
 import { getTeamIcon } from '../App';
 
 interface SearchEngineProps {
   data: Employee[];
+  onEdit?: (member: Employee) => void;
+  onDelete?: (member: Employee) => void;
+  userRole?: string;
 }
 
-export const SearchEngine = ({ data }: SearchEngineProps) => {
+export const SearchEngine = ({ data, onEdit, onDelete, userRole }: SearchEngineProps) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterField, setFilterField] = useState('All Fields');
 
@@ -103,11 +106,29 @@ export const SearchEngine = ({ data }: SearchEngineProps) => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: Math.min(idx * 0.03, 0.3) }}
-                    className="bg-[var(--bg-card)] border border-[var(--border-color)] p-5 rounded-3xl hover:border-[var(--accent-color)] hover:shadow-lg transition-all"
+                    className="bg-[var(--bg-card)] border border-[var(--border-color)] p-5 rounded-3xl hover:border-[var(--accent-color)] hover:shadow-lg transition-all relative pr-[80px]"
                   >
+                    {(userRole === 'facilitator' || userRole === 'superuser') && onEdit && onDelete && (
+                       <div className="absolute top-2 right-2 flex gap-1.5">
+                         <button
+                           onClick={() => onEdit(emp)}
+                           title="Edit member"
+                           className="w-[30px] h-[30px] bg-transparent border border-[rgba(255,192,0,0.3)] rounded-md flex items-center justify-center text-[rgba(0,0,0,0.5)] dark:text-[rgba(255,192,0,0.6)] hover:border-[#ffc000] hover:text-[#000000] dark:hover:text-[#ffc000] transition-all duration-200"
+                         >
+                           <Pencil className="w-4 h-4" />
+                         </button>
+                         <button
+                           onClick={() => onDelete(emp)}
+                           title="Delete member"
+                           className="w-[30px] h-[30px] bg-transparent border border-[rgba(239,68,68,0.3)] rounded-md flex items-center justify-center text-[rgba(239,68,68,0.6)] hover:border-[#ef4444] hover:text-[#ef4444] hover:bg-[rgba(239,68,68,0.08)] transition-all duration-200"
+                         >
+                           <Trash2 className="w-4 h-4" />
+                         </button>
+                       </div>
+                    )}
                     <div className="flex justify-between items-start mb-3">
                       <h4 className="font-black text-lg leading-tight">{emp["Employee Name"]}</h4>
-                      <span className="text-[10px] font-black bg-[var(--accent-color)]/10 px-2 py-1 rounded-md text-[var(--accent-color)] border border-[var(--accent-color)]/20">
+                      <span className="text-[10px] font-black bg-[var(--accent-color)]/10 px-2 py-1 rounded-md text-[var(--accent-color)] border border-[var(--accent-color)]/20 self-start mt-1">
                         {emp["Employee Number"]}
                       </span>
                     </div>
