@@ -1,12 +1,16 @@
 import React, { useState, useMemo } from 'react';
 import { Employee } from '../types';
 import { sortWaves } from '../utils/waveUtils';
+import { Pencil, Trash2 } from 'lucide-react';
 
 interface WaveStatsProps {
   employees: Employee[];
+  userRole?: string;
+  onEdit?: (member: Employee) => void;
+  onDelete?: (member: Employee) => void;
 }
 
-export const WaveStats: React.FC<WaveStatsProps> = ({ employees }) => {
+export const WaveStats: React.FC<WaveStatsProps> = ({ employees, userRole, onEdit, onDelete }) => {
   const allWaves = useMemo(() => 
     sortWaves(Array.from(new Set(employees.map(e => String(e.Wave))))),
     [employees]
@@ -129,16 +133,42 @@ export const WaveStats: React.FC<WaveStatsProps> = ({ employees }) => {
             </div>
             
             <div className="space-y-3 mb-6 mt-4 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
-              {selectedTeam.members.map((m, i) => (
-                <div key={i} className="flex flex-col py-3 px-3 rounded-xl border border-[rgba(255,192,0,0.1)] transition-all bg-[#f9f9f9] dark:bg-black/40">
-                  <div className="flex items-center gap-2 font-bold text-[14px] text-black dark:text-white">
-                    👤 {m["Employee Name"]}
+              {selectedTeam.members.map((m, i) => {
+                const isLevel2 = String(m.Level) === '2';
+                return (
+                  <div key={i} className={`flex flex-col py-3 px-3 rounded-xl border border-[rgba(255,192,0,0.1)] transition-all bg-[#f9f9f9] dark:bg-black/40 relative group/member`}>
+                    <div className="flex items-center justify-between">
+                      <div className={`flex items-center gap-2 font-bold text-[14px] ${isLevel2 ? 'text-blue-500 dark:text-blue-400' : 'text-black dark:text-white'}`}>
+                        👤 {m["Employee Name"]}
+                      </div>
+                      
+                      {/* Facilitator actions */}
+                      {userRole === 'facilitator' && onEdit && onDelete && (
+                        <div className="flex gap-1 opacity-0 group-hover/member:opacity-100 transition-opacity">
+                          <button 
+                            onClick={(e) => { e.stopPropagation(); onEdit(m); }}
+                            className="p-1 hover:bg-[#ffc000]/10 rounded text-[#ffc000] transition-colors"
+                            title="Edit Member"
+                          >
+                            <Pencil className="w-3.5 h-3.5" />
+                          </button>
+                          <button 
+                            onClick={(e) => { e.stopPropagation(); onDelete(m); }}
+                            className="p-1 hover:bg-red-500/10 rounded text-red-500 transition-colors"
+                            title="Delete Member"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                    <div className={`text-[11px] font-medium opacity-60 ml-5 ${isLevel2 ? 'text-blue-600 dark:text-blue-300' : 'text-[#444444] dark:text-[#cccccc]'} mt-0.5 leading-tight`}>
+                      {m["Title"]}{m["Unit"] ? ` • ${m["Unit"]}` : ''}
+                      {isLevel2 && <span className="ml-2 px-1 bg-blue-500/10 rounded text-[9px] font-black uppercase tracking-tighter">Level 2</span>}
+                    </div>
                   </div>
-                  <div className="text-[11px] font-medium opacity-60 ml-5 text-[#444444] dark:text-[#cccccc] mt-0.5 leading-tight">
-                    {m["Title"]}{m["Unit"] ? ` • ${m["Unit"]}` : ''}
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
             
             <button 

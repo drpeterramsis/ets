@@ -9,11 +9,11 @@ export const Footer = ({ onLogout, showLogout }: FooterProps) => {
   return (
     <footer className="fixed bottom-0 left-0 right-0 h-12 bg-black dark:bg-[#1a1a1a] border-t border-[rgba(255,192,0,0.3)] flex items-center justify-between px-6 z-[999]">
       <div className="text-[11px] text-[rgba(255,192,0,0.6)] font-medium">
-        Developed by Dr. Peter Ramsis<br /> Under Supervision of Training Department
+        Developed by - <strong>Dr. Peter Ramsis</strong><br /><small> Under Supervision of Training Department</small>
       </div>
 
       <div className="text-[11px] text-[rgba(255,192,0,0.4)] font-medium">
-        v1.0.037
+        v1.0.038
       </div>
 
       <div className="flex items-center">

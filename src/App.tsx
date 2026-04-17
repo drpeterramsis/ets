@@ -712,7 +712,7 @@ export default function App() {
                     <AnimatePresence mode="wait">
                       {activeTab === 'map' ? (
                        <motion.div key="map" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
-                          <SeatingMap employees={employees} loggedInEmployee={user} userRole={user.role} />
+                          <SeatingMap employees={employees} loggedInEmployee={user} userRole={user.role} onEdit={openEditModal} onDelete={openDeleteModal} />
                        </motion.div>
                       ) : activeTab === 'drill' ? (
                        <motion.div key="drill" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
@@ -726,7 +726,7 @@ export default function App() {
                        </motion.div>
                       ) : activeTab === 'stats' ? (
                         <motion.div key="stats" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
-                          <WaveStats employees={employees} />
+                          <WaveStats employees={employees} userRole={user.role} onEdit={openEditModal} onDelete={openDeleteModal} />
                         </motion.div>
                     ) : (
                       <motion.div key="search" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
@@ -1079,4 +1079,4 @@ export default function App() {
   );
 }
 
-// v1.0.037
+// v1.0.038
