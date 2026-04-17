@@ -231,7 +231,7 @@ export default function App() {
                           href="https://wa.me/201069996672?text=Hello%2C%20I'm%20contacting%20from%20EVA%20SIM%20%F0%9F%91%8B%0AI%20cannot%20find%20my%20Employee%20ID.%0ACould%20you%20please%20help%20me%3F"
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="block text-center mt-3 text-[12px] text-[rgba(255,192,0,0.6)] underline decoration-dotted hover:text-[#ffc000] hover:decoration-solid transition-all duration-200 cursor-pointer"
+                          className="block text-center mt-3 text-[12px] text-black dark:text-[rgba(255,192,0,0.6)] underline decoration-dotted hover:text-[#333333] dark:hover:text-[#ffc000] hover:decoration-solid transition-all duration-200 cursor-pointer"
                         >
                           💬 Can't find your ID? Click here
                         </a>
@@ -338,22 +338,22 @@ export default function App() {
                         </div>
                         <div className="flex-1 min-w-[320px] text-center md:text-left space-y-1">
                            <div className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-[var(--accent-color)]/10 border border-[#ffc000] rounded-full mb-1">
-                              <Hash className="w-3 h-3 text-[#ffc000]" />
-                              <p className="font-mono text-[#ffc000] text-[12px] font-bold leading-none uppercase">ID: {user["Employee Number"]}</p>
+                              <Hash className="w-3 h-3 text-black dark:text-[#ffc000]" />
+                              <p className="font-mono text-black dark:text-[#ffc000] text-[12px] font-bold leading-none uppercase">ID: {user["Employee Number"]}</p>
                            </div>
                            <h3 className="text-[20px] sm:text-[22px] font-display font-bold text-[#ffc000] uppercase leading-tight md:whitespace-nowrap">
                              {user["Employee Name"]}
                            </h3>
                            <div className="flex flex-wrap items-center justify-center md:justify-start gap-x-4 gap-y-1">
-                              <span className="flex items-center gap-1.5 text-[13px] font-medium text-[var(--text-secondary)]">
+                              <span className="flex items-center gap-1.5 text-[13px] font-medium text-[#111111] dark:text-[#aaaaaa]">
                                  <Building className="w-3.5 h-3.5" /> {user.Division}
                               </span>
-                              <span className="md:inline hidden text-[rgba(255,192,0,0.4)]">·</span>
-                              <span className="flex items-center gap-1.5 text-[13px] font-medium text-[var(--text-secondary)]">
+                              <span className="md:inline hidden text-[rgba(0,0,0,0.4)] dark:text-[rgba(255,192,0,0.4)]">·</span>
+                              <span className="flex items-center gap-1.5 text-[13px] font-medium text-[#111111] dark:text-[#aaaaaa]">
                                  <Building2 className="w-3.5 h-3.5" /> {user.Unit}
                               </span>
-                              <span className="md:inline hidden text-[rgba(255,192,0,0.4)]">·</span>
-                              <span className="flex items-center gap-1.5 text-[13px] font-medium text-[var(--text-secondary)]">
+                              <span className="md:inline hidden text-[rgba(0,0,0,0.4)] dark:text-[rgba(255,192,0,0.4)]">·</span>
+                              <span className="flex items-center gap-1.5 text-[13px] font-medium text-[#111111] dark:text-[#aaaaaa]">
                                  <Briefcase className="w-3.5 h-3.5" /> {user.Title}
                               </span>
                            </div>
@@ -363,39 +363,39 @@ export default function App() {
                      {/* ROW 2 — INFO CARDS */}
                      <div className="flex flex-col md:flex-row gap-2.5 md:gap-3 w-full">
                         {/* KINGDOM */}
-                        <div className="flex-1 bg-[#ffc000]/7 border border-[#ffc000]/30 rounded-xl px-4 py-3 flex flex-col items-center justify-center text-center h-full sm:py-3.5">
-                            <div className="flex items-center justify-center gap-1 text-[#ffc000] text-[10px] font-semibold uppercase tracking-[0.12em] mb-1">
+                        <div className="flex-1 bg-[rgba(0,0,0,0.04)] dark:bg-[rgba(255,192,0,0.07)] border border-[rgba(0,0,0,0.15)] dark:border-[rgba(255,192,0,0.3)] rounded-xl px-4 py-3 flex flex-col items-center justify-center text-center h-full sm:py-3.5">
+                            <div className="flex items-center justify-center gap-1 text-black dark:text-[#ffc000] text-[10px] font-semibold uppercase tracking-[0.12em] mb-1">
                                 <span>🏰</span> KINGDOM
                             </div>
-                            <p className="text-[22px] font-display font-bold text-[#ffc000] leading-none">{user.Kingdom}</p>
+                            <p className="text-[22px] font-display font-bold text-black dark:text-[#ffc000] leading-none">{user.Kingdom}</p>
                         </div>
 
                         {/* WAVE DATE */}
-                        <div className="flex-1 bg-[#ffc000]/7 border border-[#ffc000]/30 rounded-xl px-4 py-3 flex flex-col items-center justify-center text-center h-full sm:py-3.5">
-                            <div className="flex items-center justify-center gap-1 text-[#ffc000] text-[10px] font-semibold uppercase tracking-[0.12em] mb-1">
+                        <div className="flex-1 bg-[rgba(0,0,0,0.04)] dark:bg-[rgba(255,192,0,0.07)] border border-[rgba(0,0,0,0.15)] dark:border-[rgba(255,192,0,0.3)] rounded-xl px-4 py-3 flex flex-col items-center justify-center text-center h-full sm:py-3.5">
+                            <div className="flex items-center justify-center gap-1 text-black dark:text-[#ffc000] text-[10px] font-semibold uppercase tracking-[0.12em] mb-1">
                                 <span>📅</span> WAVE DATE
                             </div>
-                            <p className="text-[22px] font-display font-bold text-[#ffc000] leading-none">
+                            <p className="text-[22px] font-display font-bold text-black dark:text-[#ffc000] leading-none">
                               {splitWave(user.Wave).date.replace(/⏰/g, '').trim()}
                             </p>
                         </div>
 
                         {/* WAVE TIME */}
-                        <div className="flex-1 bg-[#ffc000]/7 border border-[#ffc000]/30 rounded-xl px-4 py-3 flex flex-col items-center justify-center text-center h-full sm:py-3.5">
-                            <div className="flex items-center justify-center gap-1 text-[#ffc000] text-[10px] font-semibold uppercase tracking-[0.12em] mb-1">
+                        <div className="flex-1 bg-[rgba(0,0,0,0.04)] dark:bg-[rgba(255,192,0,0.07)] border border-[rgba(0,0,0,0.15)] dark:border-[rgba(255,192,0,0.3)] rounded-xl px-4 py-3 flex flex-col items-center justify-center text-center h-full sm:py-3.5">
+                            <div className="flex items-center justify-center gap-1 text-black dark:text-[#ffc000] text-[10px] font-semibold uppercase tracking-[0.12em] mb-1">
                                 <span>⏰</span> WAVE TIME
                             </div>
-                            <p className="text-[22px] font-display font-bold text-[#ffc000] leading-none">
+                            <p className="text-[22px] font-display font-bold text-black dark:text-[#ffc000] leading-none">
                               {splitWave(user.Wave).time.trim()}
                             </p>
                         </div>
 
                         {/* TACTICAL TEAM */}
-                        <div className="flex-1 bg-[#ffc000]/7 border border-[#ffc000]/30 rounded-xl px-4 py-3 flex flex-col items-center justify-center text-center h-full sm:py-3.5">
-                            <div className="flex items-center justify-center gap-1 text-[#ffc000] text-[10px] font-semibold uppercase tracking-[0.12em] mb-1">
+                        <div className="flex-1 bg-[rgba(0,0,0,0.04)] dark:bg-[rgba(255,192,0,0.07)] border border-[rgba(0,0,0,0.15)] dark:border-[rgba(255,192,0,0.3)] rounded-xl px-4 py-3 flex flex-col items-center justify-center text-center h-full sm:py-3.5">
+                            <div className="flex items-center justify-center gap-1 text-black dark:text-[#ffc000] text-[10px] font-semibold uppercase tracking-[0.12em] mb-1">
                                 <span>👥</span> TACTICAL TEAM
                             </div>
-                            <p className="text-[22px] font-display font-bold text-[#ffc000] leading-none whitespace-nowrap">
+                            <p className="text-[22px] font-display font-bold text-black dark:text-[#ffc000] leading-none whitespace-nowrap">
                               {getTeamIcon(user.Team)} {user.Team}
                             </p>
                         </div>
