@@ -58,7 +58,8 @@ export const DrillDown = ({ data, onEdit, onDelete, userRole }: DrillDownProps) 
   
   const filteredKingdoms = useMemo(() => {
     if (!wave) return [];
-    return Array.from(new Set(data.filter(e => e.Wave === wave).map(e => e.Kingdom)));
+    return Array.from(new Set(data.filter(e => e.Wave === wave).map(e => e.Kingdom)))
+      .sort((a, b) => String(a).localeCompare(String(b), undefined, { numeric: true }));
   }, [wave, data]);
 
   const filteredTeams = useMemo(() => {
