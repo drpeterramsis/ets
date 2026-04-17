@@ -28,7 +28,7 @@ import type { Employee, ThemeMode } from './types';
 
 // ⭐ SUPERUSER IDs — add or remove Employee Numbers here
 const SUPERUSER_IDS = [
-  "4369",
+  "4639",
   // add more IDs here easily
 ];
 
