@@ -3,6 +3,7 @@ import { ChevronRight, Waves, Crown, Users, ArrowLeft, Building, Pencil, Trash2 
 import { motion, AnimatePresence } from 'motion/react';
 import type { Employee } from '../types';
 import { getTeamIcon } from '../App';
+import { sortWaves } from '../utils/waveUtils';
 
 interface DrillDownProps {
   data: Employee[];
@@ -53,7 +54,7 @@ export const DrillDown = ({ data, onEdit, onDelete, userRole }: DrillDownProps) 
     }
   };
 
-  const uniqueWaves = useMemo(() => Array.from(new Set(data.map(e => e.Wave))), [data]);
+  const uniqueWaves = useMemo(() => sortWaves(Array.from(new Set(data.map(e => e.Wave)))), [data]);
   
   const filteredKingdoms = useMemo(() => {
     if (!wave) return [];

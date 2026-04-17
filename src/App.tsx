@@ -30,6 +30,7 @@ import {
 } from 'lucide-react';
 import { SeatingMap } from './pages/SeatingMap';
 import { WaveStats } from './pages/WaveStats';
+import { sortWaves } from './utils/waveUtils';
 
 // Data and Types
 import employeeData from './data/employees.json';
@@ -49,7 +50,14 @@ const getRole = (employeeNumber: string): string => {
 };
 
 const splitWave = (wave: string): { date: string; time: string } => {
-  // Try splitting on " _ " first, then "_", then first " "
+  if (wave.includes('⏰')) {
+    const parts = wave.split('⏰');
+    return { 
+      date: parts[0].trim(), 
+      time: '⏰' + (parts[1] || '').trim() 
+    };
+  }
+  // Fallbacks for legacy formats
   if (wave.includes(' _ ')) {
     const parts = wave.split(' _ ');
     return { date: parts[0].trim(), time: parts.slice(1).join(' _ ').trim() };
@@ -58,7 +66,6 @@ const splitWave = (wave: string): { date: string; time: string } => {
     const parts = wave.split('_');
     return { date: parts[0].trim(), time: parts.slice(1).join('_').trim() };
   }
-  // Split on first space only
   const idx = wave.indexOf(' ');
   if (idx !== -1) {
     return { 
@@ -218,7 +225,7 @@ export default function App() {
   const uniqueDivisions = useMemo(() => Array.from(new Set(employees.map(e => e.Division))).sort(), [employees]);
   const uniqueUnits = useMemo(() => Array.from(new Set(employees.map(e => e.Unit))).sort(), [employees]);
   const uniqueTitles = useMemo(() => Array.from(new Set(employees.map(e => e.Title))).sort(), [employees]);
-  const uniqueWaves = useMemo(() => Array.from(new Set(employees.map(e => e.Wave))).sort(), [employees]);
+  const uniqueWaves = useMemo(() => sortWaves(Array.from(new Set(employees.map(e => e.Wave)))), [employees]);
   const uniqueKingdoms = useMemo(() => Array.from(new Set(employees.map(e => String(e.Kingdom)))).sort((a,b)=>Number(a)-Number(b)), [employees]);
 
   const TEAMS = ['Electricians', 'Engineering', 'Gold', 'Mushroom', 'Plumber'];
@@ -1071,3 +1078,5 @@ export default function App() {
     </div>
   );
 }
+
+// v1.0.036

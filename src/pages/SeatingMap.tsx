@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Employee } from '../types';
+import { sortWaves } from '../utils/waveUtils';
 
 interface SeatingMapProps {
   employees: Employee[];
@@ -19,8 +20,7 @@ const getTeamIcon = (team: string): string => {
 
 export const SeatingMap: React.FC<SeatingMapProps> = ({ employees, loggedInEmployee, userRole }) => {
   const allWaves = useMemo(() => 
-    Array.from(new Set(employees.map(e => String(e.Wave))))
-      .sort((a, b) => (a as string).localeCompare(b as string, undefined, {numeric: true})), 
+    sortWaves(Array.from(new Set(employees.map(e => String(e.Wave))))),
     [employees]
   );
 

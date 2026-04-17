@@ -3,6 +3,7 @@ import { Search as SearchIcon, X, Filter, Pencil, Trash2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import type { Employee } from '../types';
 import { getTeamIcon } from '../App';
+import { parseWave } from '../utils/waveUtils';
 
 interface SearchEngineProps {
   data: Employee[];
@@ -36,12 +37,21 @@ export const SearchEngine = ({ data, onEdit, onDelete, userRole }: SearchEngineP
   const results = useMemo(() => {
     if (searchTerm.length < minChars) return [];
     
-    return data.filter(emp => {
+    const filtered = data.filter(emp => {
       const targetValue = filterField === 'All Fields' 
         ? Object.values(emp).join(' ').toLowerCase()
         : String(emp[filterField as keyof Employee] || '').toLowerCase();
         
       return targetValue.includes(searchTerm.toLowerCase());
+    });
+
+    // Sort by wave
+    return filtered.sort((a, b) => {
+      const wa = parseWave(a.Wave);
+      const wb = parseWave(b.Wave);
+      if (wa.month !== wb.month) return wa.month - wb.month;
+      if (wa.day !== wb.day) return wa.day - wb.day;
+      return wa.startMinutes - wb.startMinutes;
     });
   }, [searchTerm, filterField, data, minChars]);
 

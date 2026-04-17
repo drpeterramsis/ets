@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Employee } from '../types';
+import { sortWaves } from '../utils/waveUtils';
 
 interface WaveStatsProps {
   employees: Employee[];
@@ -7,8 +8,7 @@ interface WaveStatsProps {
 
 export const WaveStats: React.FC<WaveStatsProps> = ({ employees }) => {
   const allWaves = useMemo(() => 
-    Array.from(new Set(employees.map(e => String(e.Wave))))
-      .sort((a, b) => (a as string).localeCompare(b as string)), 
+    sortWaves(Array.from(new Set(employees.map(e => String(e.Wave))))),
     [employees]
   );
   const [selectedWaveId, setSelectedWaveId] = useState<string | null>(allWaves[0] || null);
@@ -93,7 +93,7 @@ export const WaveStats: React.FC<WaveStatsProps> = ({ employees }) => {
       {selectedWaveId && breakdownData && (
         <div className="pt-4 border-t space-y-6">
           <h3 className="font-bold text-lg mb-4">Breakdown: Wave {selectedWaveId}</h3>
-          {Object.entries(breakdownData).sort().map(([k, teams]) => (
+          {Object.entries(breakdownData).sort((a, b) => a[0].localeCompare(b[0], undefined, {numeric: true})).map(([k, teams]) => (
             <div key={k} className="border border-[#ffc000]/30 rounded-lg overflow-hidden">
                <div className="bg-[#ffc000]/10 p-2 font-bold text-[#ffc000] border-b border-[#ffc000]/30">Kingdom {k}</div>
                <table className="w-full text-left">
@@ -101,7 +101,7 @@ export const WaveStats: React.FC<WaveStatsProps> = ({ employees }) => {
                     <tr><th className="p-2">Team</th><th className="p-2">Members</th></tr>
                   </thead>
                   <tbody>
-                    {Object.entries(teams).sort().map(([t, members]) => (
+                    {Object.entries(teams).sort((a, b) => a[0].localeCompare(b[0])).map(([t, members]) => (
                       <tr key={`${k}-${t}`} className="border-b hover:bg-gray-50 dark:hover:bg-gray-900 cursor-pointer" onClick={() => setSelectedTeam({kingdom: k, team: t, members})}>
                         <td className="p-2 font-medium flex items-center gap-2">
                            {getTeamIcon(t)} 
