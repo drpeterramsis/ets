@@ -305,33 +305,6 @@ export default function App() {
           </motion.div>
         )}
       </AnimatePresence>
-
-      <style>{`
-        :root {
-          --bg-main: #ffffff;
-          --bg-card: #ffffff;
-          --text-primary: #0f172a;
-          --text-secondary: #475569;
-          --border-color: #e2e8f0;
-          --input-bg: #f8fafc;
-          --accent-color: #1d4ed8;
-        }
-
-        .dark {
-          --bg-main: #020617;
-          --bg-card: #0f172a;
-          --text-primary: #f1f5f9;
-          --text-secondary: #94a3b8;
-          --border-color: #1e293b;
-          --input-bg: #020617;
-          --accent-color: #3b82f6;
-        }
-
-        body {
-          background-color: var(--bg-main);
-          color: var(--text-primary);
-        }
-      `}</style>
     </div>
   );
 }

@@ -30,7 +30,13 @@ The application uses an external JSON file located at `src/data/employees.json`.
 - **Icons**: Lucide React
 
 ## Version History
-### v1.0.004 (Current)
+### v1.0.005 (Current)
+- **Stability & Performance**: Fixed ESM compatibility issues in build configuration for broader deployment support (Vercel).
+- **Data Robustness**: Enhanced type definitions to handle nullable fields in large datasets.
+- **Data Expansion**: Integrated a comprehensive dataset of 13,000+ records with full organizational hierarchy.
+- **UI Consistency**: Standardized document titles and metadata across all views.
+
+### v1.0.004
 - **Advanced Navigation**: Implemented Wave -> Kingdom -> Team -> Members cascading drill-down.
 - **Search Engine**: Added professional search bar with field-specific filtering (Employee Number, Name, Title, etc.).
 - **Theme Engine**: Integrated Light/Dark mode with persistence in `localStorage`.

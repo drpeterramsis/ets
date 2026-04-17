@@ -3,7 +3,7 @@ export type Employee = {
     "Employee Name": string;
     "Email Address": string;
     "Division": string;
-    "Unit": string;
+    "Unit": string | null;
     "Title": string;
     "Level": string;
     "Wave": string;
