@@ -62,6 +62,16 @@ export const DrillDown = ({ data }: DrillDownProps) => {
   const resetFromWave = () => { setWave(null); setKingdom(null); setTeam(null); };
   const resetFromKingdom = () => { setKingdom(null); setTeam(null); };
 
+  const getWaveCount = (w: string) => data.filter(e => e.Wave === w).length;
+  const getKingdomCount = (k: string) => data.filter(e => e.Wave === wave && e.Kingdom === k).length;
+  const getTeamCount = (t: string) => data.filter(e => e.Wave === wave && e.Kingdom === kingdom && e.Team === t).length;
+
+  const Badge = ({ count }: { count: number }) => (
+    <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-[var(--accent-color)]/15 border border-[var(--accent-color)]/40 rounded-full text-[var(--accent-color)] text-[11px] font-semibold">
+      {count}
+    </span>
+  );
+
   const BackButton = ({ onClick, label }: { onClick: () => void, label: string }) => (
     <div className="flex flex-col gap-2">
       <motion.button 
@@ -145,6 +155,9 @@ export const DrillDown = ({ data }: DrillDownProps) => {
                 onClick={() => setWave(w)} 
                 className="group p-6 bg-[var(--bg-card)] border border-[var(--border-color)] rounded-3xl text-left hover:border-[var(--accent-color)] hover:shadow-xl hover:shadow-[var(--accent-color)]/5 transition-all relative overflow-hidden"
               >
+                <div className="absolute top-4 right-4 z-10">
+                  <Badge count={getWaveCount(w)} />
+                </div>
                 <Waves className="absolute -right-4 -bottom-4 w-20 h-20 opacity-5 group-hover:opacity-10 transition-opacity" />
                 <p className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-tighter mb-1">Select Wave</p>
                 <h4 className="font-display font-bold text-lg leading-tight">{formatWave(w)}</h4>
@@ -167,8 +180,11 @@ export const DrillDown = ({ data }: DrillDownProps) => {
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.97 }}
                   onClick={() => setKingdom(k)} 
-                  className="p-5 bg-[var(--bg-card)] border border-[var(--border-color)] rounded-2xl flex flex-col items-center gap-3 hover:border-[var(--accent-color)] transition-all"
+                  className="p-5 bg-[var(--bg-card)] border border-[var(--border-color)] rounded-2xl flex flex-col items-center gap-3 hover:border-[var(--accent-color)] transition-all relative"
                 >
+                  <div className="absolute top-2 right-2">
+                    <Badge count={getKingdomCount(k)} />
+                  </div>
                   <div className="p-3 bg-[var(--accent-color)]/10 rounded-xl text-[var(--accent-color)]"><Crown className="w-6 h-6" /></div>
                   <span className="font-bold">Kingdom {k}</span>
                 </motion.button>
@@ -192,8 +208,11 @@ export const DrillDown = ({ data }: DrillDownProps) => {
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.97 }}
                   onClick={() => setTeam(t)} 
-                  className="p-5 bg-[var(--bg-card)] border border-[var(--border-color)] rounded-2xl flex flex-col items-center gap-3 hover:border-[var(--accent-color)] transition-all"
+                  className="p-5 bg-[var(--bg-card)] border border-[var(--border-color)] rounded-2xl flex flex-col items-center gap-3 hover:border-[var(--accent-color)] transition-all relative"
                 >
+                  <div className="absolute top-2 right-2">
+                    <Badge count={getTeamCount(t)} />
+                  </div>
                   <div className="p-3 bg-[var(--accent-color)]/10 rounded-xl text-[var(--accent-color)]">
                     <span className="text-2xl">{getTeamIcon(t)}</span>
                   </div>

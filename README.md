@@ -1,4 +1,4 @@
-# Employee Wave Portal (v1.0.008)
+# Employee Wave Portal (v1.0.009)
 
 A professional, secure employee dashboard built with React, Tailwind CSS, and Framer Motion. This application allows employees to sign in using their email and employee number to view their current wave assignment and team details.
 
@@ -30,6 +30,11 @@ The application uses an external JSON file located at `src/data/employees.json`.
 - **Icons**: Lucide React
 
 ## Version History
+v1.0.009 - Login screen: "Can't find your ID?"
+           WhatsApp link added below login button,
+           Pre-filled message includes EVA SIM context,
+           Links to +201069996672
+
 v1.0.008 - Division added to employee profile card,
            Division added to drill-down member cards,
            Logout button made smaller and subtle,

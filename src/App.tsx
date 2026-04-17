@@ -227,6 +227,14 @@ export default function App() {
                         <button type="submit" className="w-full py-4 bg-[var(--accent-color)] text-white rounded-2xl font-black shadow-lg shadow-[var(--accent-color)]/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2">
                           CONTINUE <ArrowRight className="w-5 h-5" />
                         </button>
+                        <a 
+                          href="https://wa.me/201069996672?text=Hello%2C%20I'm%20contacting%20from%20EVA%20SIM%20%F0%9F%91%8B%0AI%20cannot%20find%20my%20Employee%20ID.%0ACould%20you%20please%20help%20me%3F"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="block text-center mt-3 text-[12px] text-[rgba(255,192,0,0.6)] underline decoration-dotted hover:text-[#ffc000] hover:decoration-solid transition-all duration-200 cursor-pointer"
+                        >
+                          💬 Can't find your ID? Click here
+                        </a>
                       </form>
                     </motion.div>
                   ) : (
