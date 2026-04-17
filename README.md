@@ -30,6 +30,12 @@ The application uses an external JSON file located at `src/data/employees.json`.
 - **Icons**: Lucide React
 
 ## Version History
+### v1.0.004
+- Added "Statistics Dashboard": A public page showing Waves (Divisions/Units), Kingdoms (Teams), and Team Members.
+- Applied new Branding: Black and Gold (#ffc000) theme throughout the application.
+- Added dynamic icon mapping for teams and kingdoms.
+- Transitioned to dark-mode-first UI design.
+
 ### v1.0.003
 - Updated login flow: Now uses Employee ID only with a 2nd confirmation step (showing Name and Unit).
 - Updated employee data with new records and fields (Kingdom, Level).

@@ -4,4 +4,11 @@
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Outfit", sans-serif;
+  --color-brand: #ffc000;
+}
+
+@layer base {
+  body {
+    @apply bg-slate-950 text-slate-200;
+  }
 }
