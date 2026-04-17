@@ -12,6 +12,12 @@ export const saveToGitHub = async (
   const apiUrl =
     `https://api.github.com/repos/${repo}/contents/${filePath}`;
 
+  console.log("🔄 Starting GitHub sync...");
+  console.log("📁 Repo:", repo);
+  console.log("📄 File:", filePath);
+  console.log("🌿 Branch:", branch);
+  console.log("🔑 Token exists:", !!token);
+
   try {
     // STEP A: Get current file SHA
     const getRes = await fetch(apiUrl, {
@@ -21,10 +27,12 @@ export const saveToGitHub = async (
       },
     });
 
+    console.log("📥 GET status:", getRes.status);
+
     if (!getRes.ok) {
-      return { 
-        success: false, 
-        message: "Failed to fetch file from GitHub" 
+      return {
+        success: false,
+        message: `Failed to fetch file. Status: ${getRes.status}`
       };
     }
 
@@ -53,23 +61,27 @@ export const saveToGitHub = async (
       }),
     });
 
+    console.log("📤 PUT status:", putRes.status);
+
     if (putRes.ok) {
-      return { 
-        success: true, 
-        message: "Saved to GitHub successfully ✅" 
+      return {
+        success: true,
+        message: "Saved to GitHub successfully ✅"
       };
     } else {
       const err = await putRes.json();
-      return { 
-        success: false, 
-        message: err.message || "GitHub save failed" 
+      console.error("❌ PUT error:", err);
+      return {
+        success: false,
+        message: err.message || "GitHub save failed"
       };
     }
 
   } catch (error) {
-    return { 
-      success: false, 
-      message: "Network error. Could not reach GitHub." 
+    console.error("❌ GitHub sync error:", error);
+    return {
+      success: false,
+      message: "Network error. Could not reach GitHub."
     };
   }
 };

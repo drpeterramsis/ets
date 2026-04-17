@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useRef } from 'react';
-import { ChevronRight, Waves, Crown, Users, ArrowLeft, Building, Pencil } from 'lucide-react';
+import { ChevronRight, Waves, Crown, Users, ArrowLeft, Building, Pencil, Trash2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import type { Employee } from '../types';
 import { getTeamIcon } from '../App';
@@ -7,10 +7,11 @@ import { getTeamIcon } from '../App';
 interface DrillDownProps {
   data: Employee[];
   onEdit?: (member: Employee) => void;
+  onDelete?: (member: Employee) => void;
   userRole?: string;
 }
 
-export const DrillDown = ({ data, onEdit, userRole }: DrillDownProps) => {
+export const DrillDown = ({ data, onEdit, onDelete, userRole }: DrillDownProps) => {
   const [wave, setWave] = useState<string | null>(null);
   const [kingdom, setKingdom] = useState<string | null>(null);
   const [team, setTeam] = useState<string | null>(null);
@@ -68,6 +69,16 @@ export const DrillDown = ({ data, onEdit, userRole }: DrillDownProps) => {
     if (!wave || !kingdom || !team) return [];
     return data.filter(e => e.Wave === wave && e.Kingdom === kingdom && e.Team === team);
   }, [wave, kingdom, team, data]);
+
+  React.useEffect(() => {
+    if (team && filteredMembers.length === 0) {
+      setTeam(null);
+    } else if (kingdom && !team && filteredTeams.length === 0) {
+      setKingdom(null);
+    } else if (wave && !kingdom && filteredKingdoms.length === 0) {
+      setWave(null);
+    }
+  }, [team, kingdom, wave, filteredMembers.length, filteredTeams.length, filteredKingdoms.length]);
 
   const formatWave = (w: string) => w.replace(/_/g, '⏰');
 
@@ -257,15 +268,24 @@ export const DrillDown = ({ data, onEdit, userRole }: DrillDownProps) => {
                      <div className="w-12 h-12 rounded-2xl bg-white dark:bg-[var(--bg-main)] flex items-center justify-center text-black dark:text-[#ffc000] font-black border border-[rgba(0,0,0,0.12)] dark:border-[rgba(255,192,0,0.2)]">
                        {m["Employee Name"].charAt(0)}
                      </div>
-                     <h4 className="font-black text-lg leading-tight text-black dark:text-white pr-8">{m["Employee Name"]}</h4>
-                     {(userRole === 'facilitator' || userRole === 'superuser') && onEdit && (
-                       <button
-                         onClick={() => onEdit(m)}
-                         title="Edit member"
-                         className="absolute top-0 right-0 w-[30px] h-[30px] bg-transparent border border-[rgba(255,192,0,0.3)] rounded-md flex items-center justify-center text-[rgba(0,0,0,0.5)] dark:text-[rgba(255,192,0,0.6)] hover:border-[#ffc000] hover:text-[#000000] dark:hover:text-[#ffc000] transition-all duration-200"
-                       >
-                         <Pencil className="w-4 h-4" />
-                       </button>
+                     <h4 className="font-black text-lg leading-tight text-black dark:text-white pr-[70px]">{m["Employee Name"]}</h4>
+                     {(userRole === 'facilitator' || userRole === 'superuser') && onEdit && onDelete && (
+                       <div className="absolute top-0 right-0 flex gap-1">
+                         <button
+                           onClick={() => onEdit(m)}
+                           title="Edit member"
+                           className="w-[30px] h-[30px] bg-transparent border border-[rgba(255,192,0,0.3)] rounded-md flex items-center justify-center text-[rgba(0,0,0,0.5)] dark:text-[rgba(255,192,0,0.6)] hover:border-[#ffc000] hover:text-[#000000] dark:hover:text-[#ffc000] transition-all duration-200"
+                         >
+                           <Pencil className="w-4 h-4" />
+                         </button>
+                         <button
+                           onClick={() => onDelete(m)}
+                           title="Delete member"
+                           className="w-[30px] h-[30px] bg-transparent border border-[rgba(239,68,68,0.3)] rounded-md flex items-center justify-center text-[rgba(239,68,68,0.6)] hover:border-[#ef4444] hover:text-[#ef4444] hover:bg-[rgba(239,68,68,0.08)] transition-all duration-200"
+                         >
+                           <Trash2 className="w-4 h-4" />
+                         </button>
+                       </div>
                      )}
                    </div>
                    <div className="space-y-1 text-xs font-bold leading-relaxed">

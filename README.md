@@ -40,7 +40,16 @@ The application uses an external JSON file located at `src/data/employees.json`.
 4. Token needs Contents: Read & Write permission
 
 ## Version History
-v1.0.014 - Hidden Add/Edit member forms temporarily due to GitHub Sync issues
+v1.0.014 - Add New Member form (facilitator only)
+           Edit existing member form
+           Delete member with confirmation modal
+           GitHub API sync for employees.json
+           Dynamic dropdowns from live data
+           "Other" option for manual entry
+           Toast notifications (success/error/loading)
+           Edit + Delete buttons on member cards
+           Auto navigate back if list becomes empty
+           githubSync.ts utility updated
            Reverted Light Mode colors from black to white to fix unreadable cards
 
 v1.0.013 - Refactored CSS Colors

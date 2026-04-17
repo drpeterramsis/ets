@@ -23,7 +23,8 @@ import {
   Hash,
   UserPlus,
   Save,
-  Pencil
+  Pencil,
+  Trash2
 } from 'lucide-react';
 
 // Data and Types
@@ -94,6 +95,8 @@ export default function App() {
   const [employees, setEmployees] = useState<Employee[]>(employeeData as Employee[]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingMember, setEditingMember] = useState<Employee | null>(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [deletingMember, setDeletingMember] = useState<Employee | null>(null);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'loading' } | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [formData, setFormData] = useState({
@@ -251,6 +254,39 @@ export default function App() {
     
     setFormErrors({});
     setIsModalOpen(true);
+  };
+
+  const openDeleteModal = (member: Employee) => {
+    setDeletingMember(member);
+    setIsDeleteModalOpen(true);
+  };
+
+  const closeDeleteModal = () => {
+    setIsDeleteModalOpen(false);
+    setDeletingMember(null);
+  };
+
+  const confirmDeleteMember = async () => {
+    if (!deletingMember) return;
+    
+    setIsSaving(true);
+    showToast('Saving to GitHub...', 'loading');
+    
+    const updatedList = employees.filter(e => e["Employee Number"] !== deletingMember["Employee Number"]);
+    setEmployees(updatedList);
+    
+    const result = await saveToGitHub(updatedList);
+    setIsSaving(false);
+    
+    if (result.success) {
+      showToast('Member deleted successfully ✅', 'success');
+      closeDeleteModal();
+    } else {
+      showToast('Delete failed. Please try again ❌', 'error');
+      // Revert if failed
+      setEmployees(employees);
+      closeDeleteModal();
+    }
   };
 
   const handleSaveMember = async () => {
@@ -552,14 +588,12 @@ export default function App() {
                {(user.role === 'facilitator' || user.role === 'superuser') && (
                  <div className="min-h-[400px]">
                     <div className="mb-4">
-                      {/* Hidden due to Github sync Failed
                       <button 
                         onClick={openAddModal}
                         className="flex items-center gap-2 px-[22px] py-[10px] bg-transparent border border-[#ffc000] rounded-full text-[#ffc000] font-display font-semibold text-[14px] hover:bg-[#ffc000]/10 transition-all cursor-pointer"
                       >
                         <UserPlus className="w-4 h-4" /> + Add New Member
                       </button>
-                      */}
                     </div>
                     <AnimatePresence mode="wait">
                       {activeTab === 'drill' ? (
@@ -569,8 +603,7 @@ export default function App() {
                                 <h3 className="text-xl font-display font-black tracking-tight">Wave Drill-Down</h3>
                                 <p className="text-sm text-[var(--text-secondary)]">Browse institutional structure from Wave to individual Teams.</p>
                              </div>
-                             {/* Passed undefined to onEdit temporarily to hide Edit Member */ }
-                             <DrillDown data={employees} onEdit={undefined} userRole={user.role} />
+                             <DrillDown data={employees} onEdit={openEditModal} onDelete={openDeleteModal} userRole={user.role} />
                           </div>
                        </motion.div>
                     ) : (
@@ -634,7 +667,7 @@ export default function App() {
                   disabled={!!editingMember}
                   onChange={(e) => setFormData({...formData, id: e.target.value})}
                   placeholder="e.g. 12345"
-                  className={`w-full bg-[var(--input-bg)] text-[var(--text-primary)] border border-[#ffc000]/30 rounded-lg px-3.5 py-2.5 font-display text-[14px] focus:border-[#ffc000] focus:outline-none focus:ring-[3px] focus:ring-[#ffc000]/10 ${editingMember ? 'bg-gray-200 dark:bg-[#0a0a0a] text-[#888888] cursor-not-allowed' : ''}`}
+                  className={`w-full text-[var(--text-primary)] border border-[#ffc000]/30 rounded-lg px-3.5 py-2.5 font-display text-[14px] focus:border-[#ffc000] focus:outline-none focus:ring-[3px] focus:ring-[#ffc000]/10 ${editingMember ? 'bg-[#e0e0e0] dark:bg-[#0a0a0a] !text-[#888888] cursor-not-allowed' : 'bg-[var(--input-bg)]'}`}
                 />
                 {editingMember && <p className="text-[10px] text-[#888888] mt-1">ID cannot be changed</p>}
                 {formErrors.id && <p className="text-[#ef4444] text-[11px] mt-1">{formErrors.id}</p>}
@@ -779,6 +812,41 @@ export default function App() {
               >
                 <Save className="w-4 h-4" />
                 {isSaving ? 'Saving...' : editingMember ? 'Save Changes' : 'Save Member'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Delete Confirmation Modal */}
+      {isDeleteModalOpen && deletingMember && (
+        <div className="fixed inset-0 z-[9999] bg-black/75 flex items-center justify-center p-4">
+          <div className="bg-[var(--bg-card)] border border-[#ef4444] rounded-2xl p-8 w-full min-w-[300px] max-w-[420px] text-center shadow-[0_20px_60px_rgba(0,0,0,0.5)]">
+            <Trash2 className="w-12 h-12 text-[#ef4444] mx-auto" />
+            <h2 className="text-[#000000] dark:text-[#ffffff] font-display text-[20px] font-bold mt-4">
+              Delete Member?
+            </h2>
+            <div className="my-3">
+              <span className="font-bold text-[#ffc000]">{deletingMember["Employee Name"]}</span><br />
+              <span className="text-[13px] text-[#888888]">(ID: {deletingMember["Employee Number"]})</span>
+            </div>
+            <p className="text-[13px] text-[#888888] mb-6 whitespace-pre-line">
+              This action cannot be undone.{"\n"}The member will be permanently removed from the system.
+            </p>
+            <div className="flex flex-row justify-center gap-3">
+              <button 
+                onClick={closeDeleteModal}
+                className="bg-transparent border border-[#ffc000]/40 text-[#ffc000] rounded-lg px-7 py-2.5 hover:bg-[#ffc000]/10 transition-colors"
+                disabled={isSaving}
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={confirmDeleteMember}
+                className="flex items-center justify-center gap-2 bg-[#ef4444] text-[#ffffff] font-bold rounded-lg px-7 py-2.5 hover:bg-[#dc2626] transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+                disabled={isSaving}
+              >
+                <Trash2 className="w-4 h-4" />
+                {isSaving ? 'Deleting...' : 'Yes, Delete'}
               </button>
             </div>
           </div>
