@@ -40,6 +40,14 @@ The application uses an external JSON file located at `src/data/employees.json`.
 4. Token needs Contents: Read & Write permission
 
 ## Version History
+v1.0.020 - Seating Map visible to Employee, Superuser, Facilitator
+           Employee & Superuser: map limited to their own wave (no selector)
+           Facilitator: map supports all waves with wave selector
+           Map blocks show icon + member count only
+           Click rules: employee/superuser only own table; facilitator any table
+           Added Stats page for Facilitator & Superuser
+           Stats shows waves summary + per-wave kingdom/team member counts
+           Stats updates live after add/edit/delete
 v1.0.017 - New Seating Map page
            Wave-based map auto-loaded from login ID
            Kingdoms grouped with Teams inside

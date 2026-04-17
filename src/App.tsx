@@ -653,21 +653,52 @@ export default function App() {
                )}
 
                {/* Feature Tabs */}
-               {(user.role === 'facilitator' || user.role === 'superuser') && (
+               {true && (
                    <div className="min-h-[400px]">
                     <div className="mb-4 flex gap-3 flex-wrap">
                       <button 
-                        onClick={openAddModal}
-                        className="flex items-center gap-2 px-[22px] py-[10px] bg-transparent border border-[#ffc000] rounded-full text-[#ffc000] font-display font-semibold text-[14px] hover:bg-[#ffc000]/10 transition-all cursor-pointer"
-                      >
-                        <UserPlus className="w-4 h-4" /> + Add New Member
+                         onClick={() => setActiveTab('map')}
+                         className={`px-6 py-2.5 rounded-full font-bold text-sm transition-all ${activeTab === 'map' ? 'bg-[#ffc000] text-black' : 'bg-gray-200 dark:bg-gray-700'}`}
+                       >
+                         🗺️ Map
                       </button>
-                      <button 
-                        onClick={handleCleanDuplicates}
-                        className="flex items-center gap-2 px-[22px] py-[10px] bg-transparent border border-[rgba(239,68,68,0.4)] rounded-full text-[#ef4444] font-display font-semibold text-[14px] hover:bg-[rgba(239,68,68,0.08)] hover:border-[#ef4444] transition-all cursor-pointer"
-                      >
-                        🧹 Clean Duplicates
-                      </button>
+                      
+                      {(user.role === 'facilitator' || user.role === 'superuser') && (
+                        <>
+                          <button 
+                             onClick={() => setActiveTab('drill')}
+                             className={`px-6 py-2.5 rounded-full font-bold text-sm transition-all ${activeTab === 'drill' ? 'bg-[#ffc000] text-black' : 'bg-gray-200 dark:bg-gray-700'}`}
+                           >
+                             📊 Drill-Down
+                          </button>
+                          <button 
+                             onClick={() => setActiveTab('search')}
+                             className={`px-6 py-2.5 rounded-full font-bold text-sm transition-all ${activeTab === 'search' ? 'bg-[#ffc000] text-black' : 'bg-gray-200 dark:bg-gray-700'}`}
+                           >
+                             🔍 Search Engine
+                          </button>
+                          <button 
+                             onClick={() => setActiveTab('stats')}
+                             className={`px-6 py-2.5 rounded-full font-bold text-sm transition-all ${activeTab === 'stats' ? 'bg-[#ffc000] text-black' : 'bg-gray-200 dark:bg-gray-700'}`}
+                           >
+                             📈 Stats
+                          </button>
+                          <div className="flex gap-2">
+                             <button 
+                               onClick={openAddModal}
+                               className="flex items-center gap-2 px-[22px] py-[10px] bg-transparent border border-[#ffc000] rounded-full text-[#ffc000] font-display font-semibold text-[14px] hover:bg-[#ffc000]/10 transition-all cursor-pointer"
+                             >
+                               <UserPlus className="w-4 h-4" /> + Add New Member
+                             </button>
+                             <button 
+                               onClick={handleCleanDuplicates}
+                               className="flex items-center gap-2 px-[22px] py-[10px] bg-transparent border border-[rgba(239,68,68,0.4)] rounded-full text-[#ef4444] font-display font-semibold text-[14px] hover:bg-[rgba(239,68,68,0.08)] hover:border-[#ef4444] transition-all cursor-pointer"
+                             >
+                               🧹 Clean Duplicates
+                             </button>
+                          </div>
+                        </>
+                      )}
                     </div>
                     <AnimatePresence mode="wait">
                       {activeTab === 'map' ? (
