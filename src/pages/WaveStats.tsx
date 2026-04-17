@@ -41,6 +41,16 @@ export const WaveStats: React.FC<WaveStatsProps> = ({ employees }) => {
     return table;
   }, [employees, selectedWaveId]);
 
+  const getTeamIcon = (team: string): string => {
+    const t = team.toLowerCase();
+    if (t.includes('electric')) return '⚡';
+    if (t.includes('engineer')) return '⚙️';
+    if (t.includes('gold')) return '🥇';
+    if (t.includes('mushroom')) return '🍄';
+    if (t.includes('plumb')) return '🔧';
+    return '👥';
+  };
+
   return (
     <div className="p-4 space-y-8">
       <h2 className="text-2xl font-bold text-[#ffc000]">📊 Wave Statistics</h2>
@@ -80,8 +90,7 @@ export const WaveStats: React.FC<WaveStatsProps> = ({ employees }) => {
                     {Object.entries(teams).sort().map(([t, members]) => (
                       <tr key={`${k}-${t}`} className="border-b hover:bg-gray-50 dark:hover:bg-gray-900 cursor-pointer" onClick={() => setSelectedTeam({kingdom: k, team: t, members})}>
                         <td className="p-2 font-medium flex items-center gap-2">
-                           {/* Team Icon (helper function defined in SeatingMap usually, but added inline here for simplicity) */}
-                           {t === 'Electricians' ? '⚡' : t === 'Engineering' ? '⚙️' : t === 'Gold' ? '🥇' : t === 'Mushroom' ? '🍄' : t === 'Plumber' ? '🔧' : '👥'} 
+                           {getTeamIcon(t)} 
                            {t}
                         </td>
                         <td className="p-2">{members.length}</td>
@@ -94,15 +103,36 @@ export const WaveStats: React.FC<WaveStatsProps> = ({ employees }) => {
         </div>
       )}
 
-      {/* Modal - Names Only */}
+      {/* Modal - Enhanced with Subtitles (Synced with SeatingMap) */}
       {selectedTeam && (
-        <div className="fixed inset-0 bg-black/80 z-[9999] flex items-center justify-center p-4" onClick={() => setSelectedTeam(null)}>
-          <div className="bg-white dark:bg-[#111111] border-2 border-[#ffc000] rounded-xl p-6 w-full max-w-sm" onClick={e => e.stopPropagation()}>
-            <h4 className="text-[#ffc000] font-bold">Team — Kingdom {selectedTeam.kingdom} — Wave {selectedWaveId}</h4>
-            <div className="space-y-1 mb-4 my-4">
-              {selectedTeam.members.map((m, i) => <div key={i} className="p-2 rounded text-sm text-gray-800 dark:text-gray-200">👤 {m["Employee Name"]}</div>)}
+        <div className="fixed inset-0 bg-black/90 z-[9999] flex items-center justify-center p-4 backdrop-blur-sm" onClick={() => setSelectedTeam(null)}>
+          <div className="bg-white dark:bg-[#1a1a1a] border-2 border-[#ffc000] rounded-2xl p-7 w-full max-w-[360px]" onClick={e => e.stopPropagation()}>
+            <h4 className="text-[#ffc000] font-bold text-lg mb-1">{getTeamIcon(selectedTeam.team)} {selectedTeam.team}</h4>
+            <div className="text-[#888888] text-[11px] mb-4 flex items-center gap-2">
+              <span className="bg-[#ffc000]/10 text-[#ffc000] px-1.5 rounded">Kingdom {selectedTeam.kingdom}</span>
+              <span>•</span>
+              <span>Wave {(selectedWaveId || '').replace(/_/g, ' ⏰ ')}</span>
             </div>
-            <button onClick={() => setSelectedTeam(null)} className="w-full py-2 bg-[#ffc000] text-black font-bold rounded">Close</button>
+            
+            <div className="space-y-3 mb-6 mt-4 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
+              {selectedTeam.members.map((m, i) => (
+                <div key={i} className="flex flex-col py-3 px-3 rounded-xl border border-[rgba(255,192,0,0.1)] transition-all bg-[#f9f9f9] dark:bg-black/40">
+                  <div className="flex items-center gap-2 font-bold text-[14px] text-black dark:text-white">
+                    👤 {m["Employee Name"]}
+                  </div>
+                  <div className="text-[11px] font-medium opacity-60 ml-5 text-[#444444] dark:text-[#cccccc] mt-0.5 leading-tight">
+                    {m["Title"]}{m["Unit"] ? ` • ${m["Unit"]}` : ''}
+                  </div>
+                </div>
+              ))}
+            </div>
+            
+            <button 
+              onClick={() => setSelectedTeam(null)} 
+              className="w-full py-3 bg-[#ffc000] text-black font-black text-sm rounded-xl active:scale-95 transition-transform shadow-[0_5px_15px_rgba(255,192,0,0.3)]"
+            >
+              CLOSE
+            </button>
           </div>
         </div>
       )}

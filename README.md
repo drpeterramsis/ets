@@ -1,4 +1,4 @@
-# Employee Wave Portal (v1.0.030)
+# Employee Wave Portal (v1.0.031)
 
 
 A professional, secure employee dashboard built with React, Tailwind CSS, and Framer Motion. This application allows employees to sign in using their email and employee number to view their current wave assignment and team details.
@@ -41,6 +41,8 @@ The application uses an external JSON file located at `src/data/employees.json`.
 4. Token needs Contents: Read & Write permission
 
 ## Version History
+v1.0.031 - Feature: Synchronized Wave Stats team popup with Seating Map design (added Titles/Units).
+           - Style: Unified team icon logic across the entire dashboard.
 v1.0.030 - Fix: Restored compact grid layout (Kingdoms/Tables) as the primary view.
            - Feature: Added Title and Unit as subtitle inside the team details popup.
            - Style: Improved popup layout with better hierarchy and contrast.
