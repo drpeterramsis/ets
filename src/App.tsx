@@ -24,8 +24,11 @@ import {
   UserPlus,
   Save,
   Pencil,
-  Trash2
+  Trash2,
+  Map as MapIcon,
+  MapPin
 } from 'lucide-react';
+import { SeatingMap } from './components/SeatingMap';
 
 // Data and Types
 import employeeData from './data/employees.json';
@@ -89,7 +92,7 @@ export default function App() {
   const [foundEmployee, setFoundEmployee] = useState<Employee | null>(null);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'drill' | 'search'>('drill');
+  const [activeTab, setActiveTab] = useState<'drill' | 'search' | 'map'>('map');
   
   // New States
   const [employees, setEmployees] = useState<Employee[]>(employeeData as Employee[]);
@@ -686,7 +689,11 @@ export default function App() {
                       </button>
                     </div>
                     <AnimatePresence mode="wait">
-                      {activeTab === 'drill' ? (
+                      {activeTab === 'map' ? (
+                       <motion.div key="map" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
+                          <SeatingMap employees={employees} loggedInEmployee={user} userRole={user.role} />
+                       </motion.div>
+                      ) : activeTab === 'drill' ? (
                        <motion.div key="drill" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
                           <div className="space-y-6">
                              <div className="pl-2">

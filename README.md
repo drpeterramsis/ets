@@ -40,17 +40,18 @@ The application uses an external JSON file located at `src/data/employees.json`.
 4. Token needs Contents: Read & Write permission
 
 ## Version History
+v1.0.017 - New Seating Map page
+           Wave-based map auto-loaded from login ID
+           Kingdoms grouped with Teams inside
+           Employee name highlighted in their table
+           "Your Table" gold border + badge
+           Click own table → see full team popup
+           Facilitator: wave selector + all tables clickable
+           Member count badge on each table
+           Team emoji mapping
+           Empty/loading states handled
+
 v1.0.016 - Fixed edit duplication bug (.map replace)
-           Auto deduplication on app load
-           Manual "Clean Duplicates" button
-           Duplicates review modal (choose which to keep)
-           Prevent duplicate ID on Add New Member
-           Auto-save cleaned data to GitHub
-
-v1.0.015 - Added Edit + Delete buttons to Search Engine results
-           Immediate update of Search Engine cards on Edit/Delete
-
-v1.0.014 - Add New Member form (facilitator only)
            Edit existing member form
            Delete member with confirmation modal
            GitHub API sync for employees.json
