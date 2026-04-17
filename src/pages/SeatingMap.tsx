@@ -71,11 +71,11 @@ export const SeatingMap: React.FC<SeatingMapProps> = ({ employees, loggedInEmplo
       )}
 
       {/* Map Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
         {kingdomNames.map(kingdom => (
-          <div key={kingdom} className="border-2 border-[#ffc000]/20 rounded-xl p-4 bg-gray-50 dark:bg-black/20">
-            <h3 className="font-bold text-[#ffc000] mb-3">Kingdom {kingdom}</h3>
-            <div className="grid grid-cols-2 gap-2">
+          <div key={kingdom} className="border-2 border-[#ffc000]/20 rounded-xl p-3 bg-gray-50 dark:bg-black/20">
+            <h3 className="font-bold text-[#ffc000] mb-2 text-sm">Kingdom {kingdom}</h3>
+            <div className="flex flex-wrap gap-1.5">
               {Object.entries(groupedData[kingdom]).sort((a,b) => a[0].localeCompare(b[0])).map(([team, members]) => {
                 const isUserTable = loggedInEmployee && members.some(m => m["Employee Number"] === loggedInEmployee["Employee Number"]);
                 

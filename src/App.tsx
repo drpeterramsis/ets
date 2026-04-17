@@ -984,6 +984,29 @@ export default function App() {
                 {duplicateGroups.length} duplicate IDs detected. Choose which record to KEEP for each.
              </p>
              
+             <div className="flex gap-2 mb-4">
+                <button 
+                  onClick={() => {
+                    const allSelected: Record<string, number> = {};
+                    duplicateGroups.forEach(([id]) => { allSelected[id] = 0; });
+                    setDuplicateSelections(allSelected);
+                  }}
+                  className="text-[11px] font-bold text-[#ffc000] underline hover:text-[#e6ac00]"
+                >
+                  Select First of All
+                </button>
+                <button 
+                  onClick={() => {
+                    const noneSelected: Record<string, number> = {};
+                    duplicateGroups.forEach(([id]) => { noneSelected[id] = -1; });
+                    setDuplicateSelections(noneSelected);
+                  }}
+                  className="text-[11px] font-bold text-[#ffc000] underline hover:text-[#e6ac00]"
+                >
+                  Unselect All
+                </button>
+             </div>
+             
              <div className="space-y-4">
                {duplicateGroups.map(([id, group]) => (
                   <div key={id} className="border border-[rgba(255,192,0,0.2)] rounded-xl p-4 bg-[rgba(0,0,0,0.02)] dark:bg-[rgba(255,255,255,0.02)]">

@@ -40,6 +40,10 @@ The application uses an external JSON file located at `src/data/employees.json`.
 4. Token needs Contents: Read & Write permission
 
 ## Version History
+v1.0.025 - Map Grid: mobile layout adjusted to 1 column per 5 kingdoms (1x5)
+v1.0.024 - Map Grid: mobile layout optimized to 5 columns per row
+v1.0.023 - Map Grid: optimized to 5 tables per row
+v1.0.022 - Improved Duplicate Modal: added "Select First of All" and "Unselect All" options
 v1.0.021 - Improved Duplicate Modal: click-outside to close, fully visible details, and toggleable selection
 v1.0.020 - Seating Map visible to Employee, Superuser, Facilitator
            Employee & Superuser: map limited to their own wave (no selector)
