@@ -20,12 +20,16 @@ import {
   XCircle,
   Shield,
   ArrowRight,
-  Hash
+  Hash,
+  UserPlus,
+  Save,
+  Pencil
 } from 'lucide-react';
 
 // Data and Types
 import employeeData from './data/employees.json';
 import type { Employee, ThemeMode } from './types';
+import { saveToGitHub } from './utils/githubSync';
 
 // ⭐ SUPERUSER IDs — add or remove Employee Numbers here
 const SUPERUSER_IDS = [
@@ -85,6 +89,20 @@ export default function App() {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'drill' | 'search'>('drill');
+  
+  // New States
+  const [employees, setEmployees] = useState<Employee[]>(employeeData as Employee[]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingMember, setEditingMember] = useState<Employee | null>(null);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'loading' } | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [formData, setFormData] = useState({
+    id: '', name: '', division: '', unit: '', title: '', wave: '', kingdom: '', team: ''
+  });
+  const [otherFields, setOtherFields] = useState({
+    division: '', unit: '', title: ''
+  });
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
   // Initialization: Theme and Session
   useEffect(() => {
@@ -169,6 +187,133 @@ export default function App() {
     setLoginStep(1);
     setEmpNumber('');
     setFoundEmployee(null);
+  };
+
+  // Toast
+  useEffect(() => {
+    if (toast && toast.type !== 'loading') {
+      const timer = setTimeout(() => setToast(null), 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [toast]);
+
+  const showToast = (message: string, type: 'success' | 'error' | 'loading') => {
+    setToast({ message, type });
+  };
+
+  // Extract unique values
+  const uniqueDivisions = useMemo(() => Array.from(new Set(employees.map(e => e.Division))).sort(), [employees]);
+  const uniqueUnits = useMemo(() => Array.from(new Set(employees.map(e => e.Unit))).sort(), [employees]);
+  const uniqueTitles = useMemo(() => Array.from(new Set(employees.map(e => e.Title))).sort(), [employees]);
+  const uniqueWaves = useMemo(() => Array.from(new Set(employees.map(e => e.Wave))).sort(), [employees]);
+  const uniqueKingdoms = useMemo(() => Array.from(new Set(employees.map(e => String(e.Kingdom)))).sort((a,b)=>Number(a)-Number(b)), [employees]);
+
+  const TEAMS = ['Electricians', 'Engineering', 'Gold', 'Mushroom', 'Plumber'];
+
+  const getTeamLabel = (t: string) => {
+    switch (t) {
+      case 'Electricians': return '⚡ Electricians';
+      case 'Engineering': return '⚙️ Engineering';
+      case 'Gold': return '🥇 Gold';
+      case 'Mushroom': return '🍄 Mushroom';
+      case 'Plumber': return '🔧 Plumber';
+      default: return t;
+    }
+  };
+
+  const openAddModal = () => {
+    setEditingMember(null);
+    setFormData({ id: '', name: '', division: '', unit: '', title: '', wave: '', kingdom: '', team: '' });
+    setOtherFields({ division: '', unit: '', title: '' });
+    setFormErrors({});
+    setIsModalOpen(true);
+  };
+
+  const openEditModal = (member: Employee) => {
+    setEditingMember(member);
+    
+    setFormData({
+      id: member["Employee Number"],
+      name: member["Employee Name"],
+      division: uniqueDivisions.includes(member.Division) ? member.Division : 'Other',
+      unit: uniqueUnits.includes(member.Unit) ? member.Unit : 'Other',
+      title: uniqueTitles.includes(member.Title) ? member.Title : 'Other',
+      wave: member.Wave,
+      kingdom: member.Kingdom,
+      team: member.Team
+    });
+    
+    setOtherFields({
+      division: !uniqueDivisions.includes(member.Division) ? member.Division : '',
+      unit: !uniqueUnits.includes(member.Unit) ? member.Unit : '',
+      title: !uniqueTitles.includes(member.Title) ? member.Title : ''
+    });
+    
+    setFormErrors({});
+    setIsModalOpen(true);
+  };
+
+  const handleSaveMember = async () => {
+    const errors: Record<string, string> = {};
+    if (!formData.id) errors.id = 'ID is required';
+    else if (!/^\d+$/.test(formData.id)) errors.id = 'ID must be numeric only';
+    else if (!editingMember && employees.some(e => e["Employee Number"] === formData.id)) errors.id = '⚠️ This ID already exists';
+    
+    if (!formData.name) errors.name = 'Name is required';
+    
+    const finalDivision = formData.division === 'Other' ? otherFields.division : formData.division;
+    if (!finalDivision) errors.division = 'Division is required';
+    
+    const finalUnit = formData.unit === 'Other' ? otherFields.unit : formData.unit;
+    if (!finalUnit) errors.unit = 'Unit is required';
+    
+    const finalTitle = formData.title === 'Other' ? otherFields.title : formData.title;
+    if (!finalTitle) errors.title = 'Title is required';
+    
+    if (!formData.wave) errors.wave = 'Wave is required';
+    if (!formData.kingdom) errors.kingdom = 'Kingdom is required';
+    if (!formData.team) errors.team = 'Team is required';
+
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors);
+      return;
+    }
+
+    setIsSaving(true);
+    showToast('Saving to GitHub...', 'loading');
+
+    const newEmp: Employee = {
+      "Employee Number": formData.id,
+      "Employee Name": formData.name,
+      Division: finalDivision,
+      Unit: finalUnit,
+      Title: finalTitle,
+      Job: finalTitle, // duplicate for compatibility
+      Wave: formData.wave,
+      Kingdom: formData.kingdom,
+      Team: formData.team
+    };
+    
+    let updatedList;
+    if (editingMember) {
+      updatedList = employees.map(e => e["Employee Number"] === editingMember["Employee Number"] ? newEmp : e);
+    } else {
+      updatedList = [...employees, newEmp];
+    }
+    
+    setEmployees(updatedList);
+    
+    const result = await saveToGitHub(updatedList);
+    setIsSaving(false);
+    
+    if (result.success) {
+      showToast('Member saved to GitHub successfully!', 'success');
+      setIsModalOpen(false);
+    } else {
+      // Revert if failed, but prompt says "Saved locally only", let's keep local state.
+      showToast('GitHub sync failed. Saved locally only.', 'error');
+      setIsModalOpen(false);
+    }
   };
 
   if (isLoading) return null;
@@ -406,6 +551,14 @@ export default function App() {
                {/* Feature Tabs */}
                {(user.role === 'facilitator' || user.role === 'superuser') && (
                  <div className="min-h-[400px]">
+                    <div className="mb-4">
+                      <button 
+                        onClick={openAddModal}
+                        className="flex items-center gap-2 px-[22px] py-[10px] bg-transparent border border-[#ffc000] rounded-full text-[#ffc000] font-display font-semibold text-[14px] hover:bg-[#ffc000]/10 transition-all cursor-pointer"
+                      >
+                        <UserPlus className="w-4 h-4" /> + Add New Member
+                      </button>
+                    </div>
                     <AnimatePresence mode="wait">
                       {activeTab === 'drill' ? (
                        <motion.div key="drill" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
@@ -414,7 +567,7 @@ export default function App() {
                                 <h3 className="text-xl font-display font-black tracking-tight">Wave Drill-Down</h3>
                                 <p className="text-sm text-[var(--text-secondary)]">Browse institutional structure from Wave to individual Teams.</p>
                              </div>
-                             <DrillDown data={employeeData as Employee[]} />
+                             <DrillDown data={employees} onEdit={openEditModal} userRole={user.role} />
                           </div>
                        </motion.div>
                     ) : (
@@ -424,7 +577,7 @@ export default function App() {
                                 <h3 className="text-xl font-display font-black tracking-tight">Database Search</h3>
                                 <p className="text-sm text-[var(--text-secondary)]">Search across all employee records with specific filters.</p>
                              </div>
-                             <SearchEngine data={employeeData as Employee[]} />
+                             <SearchEngine data={employees} />
                           </div>
                       </motion.div>
                     )}
@@ -436,6 +589,198 @@ export default function App() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Toast Notification */}
+      <AnimatePresence>
+        {toast && (
+          <motion.div
+            initial={{ opacity: 0, y: -20, x: '-50%' }}
+            animate={{ opacity: 1, y: 0, x: '-50%' }}
+            exit={{ opacity: 0, transition: { duration: 0.2 } }}
+            transition={{ duration: 0.3, ease: 'easeOut' }}
+            className={`fixed top-6 left-1/2 z-[99999] bg-[#1a1a1a] rounded-[12px] px-[22px] py-[14px] font-display text-[13px] text-white shadow-[0_8px_32px_rgba(0,0,0,0.4)] min-w-[280px] text-center border ${
+              toast.type === 'success' ? 'border-[#22c55e]' : toast.type === 'error' ? 'border-[#ef4444]' : 'border-[#ffc000]'
+            }`}
+          >
+            {toast.type === 'success' && '✅ '}
+            {toast.type === 'error' && '❌ '}
+            {toast.type === 'loading' && '⏳ '}
+            {toast.message}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Add/Edit Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-[9999] bg-black/75 flex items-center justify-center p-4">
+          <div className="bg-[var(--bg-card)] border border-[#ffc000] rounded-2xl p-8 w-full min-w-[300px] max-w-[520px] max-h-[90vh] overflow-y-auto shadow-[0_20px_60px_rgba(0,0,0,0.5)] custom-scrollbar">
+            <h2 className="text-[#ffc000] font-display text-[20px] font-bold mb-6 flex items-center gap-2">
+              {editingMember ? <Pencil className="w-5 h-5" /> : <UserPlus className="w-5 h-5" />}
+              {editingMember ? 'Edit Member' : 'Add New Member'}
+            </h2>
+            
+            <div className="space-y-4">
+              {/* Field 1 - ID */}
+              <div>
+                <label className="block text-[11px] font-semibold tracking-[0.08em] uppercase text-black dark:text-[#ffc000] mb-[6px]">
+                  Employee ID{editingMember && ' (Read Only)'}
+                </label>
+                <input 
+                  type="text" 
+                  value={formData.id}
+                  disabled={!!editingMember}
+                  onChange={(e) => setFormData({...formData, id: e.target.value})}
+                  placeholder="e.g. 12345"
+                  className={`w-full bg-[var(--input-bg)] text-[var(--text-primary)] border border-[#ffc000]/30 rounded-lg px-3.5 py-2.5 font-display text-[14px] focus:border-[#ffc000] focus:outline-none focus:ring-[3px] focus:ring-[#ffc000]/10 ${editingMember ? 'bg-gray-200 dark:bg-[#0a0a0a] text-[#888888] cursor-not-allowed' : ''}`}
+                />
+                {editingMember && <p className="text-[10px] text-[#888888] mt-1">ID cannot be changed</p>}
+                {formErrors.id && <p className="text-[#ef4444] text-[11px] mt-1">{formErrors.id}</p>}
+              </div>
+
+              {/* Field 2 - Name */}
+              <div>
+                <label className="block text-[11px] font-semibold tracking-[0.08em] uppercase text-black dark:text-[#ffc000] mb-[6px]">
+                  Full Name
+                </label>
+                <input 
+                  type="text" 
+                  value={formData.name}
+                  onChange={(e) => setFormData({...formData, name: e.target.value})}
+                  placeholder="Employee full name"
+                  className="w-full bg-[var(--input-bg)] text-[var(--text-primary)] border border-[#ffc000]/30 rounded-lg px-3.5 py-2.5 font-display text-[14px] focus:border-[#ffc000] focus:outline-none focus:ring-[3px] focus:ring-[#ffc000]/10"
+                />
+                {formErrors.name && <p className="text-[#ef4444] text-[11px] mt-1">{formErrors.name}</p>}
+              </div>
+
+              {/* Field 3 - Division */}
+              <div>
+                <label className="block text-[11px] font-semibold tracking-[0.08em] uppercase text-black dark:text-[#ffc000] mb-[6px]">
+                  Division
+                </label>
+                <select 
+                  value={formData.division}
+                  onChange={(e) => setFormData({...formData, division: e.target.value})}
+                  className="w-full bg-[var(--input-bg)] text-[var(--text-primary)] border border-[#ffc000]/30 rounded-lg px-3.5 py-2.5 font-display text-[14px] focus:border-[#ffc000] focus:outline-none focus:ring-[3px] focus:ring-[#ffc000]/10"
+                >
+                  <option value="">Select Division...</option>
+                  {uniqueDivisions.map(d => <option key={d} value={d}>{d}</option>)}
+                  <option value="Other">✏️ Other (type manually)</option>
+                </select>
+                {formData.division === 'Other' && (
+                  <input type="text" placeholder="Type division name" value={otherFields.division} onChange={e => setOtherFields({...otherFields, division: e.target.value})} className="mt-2 w-full bg-[var(--input-bg)] text-[var(--text-primary)] border border-[#ffc000]/30 rounded-lg px-3.5 py-2.5 font-display text-[14px] focus:border-[#ffc000] focus:outline-none focus:ring-[3px] focus:ring-[#ffc000]/10" />
+                )}
+                {formErrors.division && <p className="text-[#ef4444] text-[11px] mt-1">{formErrors.division}</p>}
+              </div>
+
+              {/* Field 4 - Unit */}
+              <div>
+                <label className="block text-[11px] font-semibold tracking-[0.08em] uppercase text-black dark:text-[#ffc000] mb-[6px]">
+                  Unit
+                </label>
+                <select 
+                  value={formData.unit}
+                  onChange={(e) => setFormData({...formData, unit: e.target.value})}
+                  className="w-full bg-[var(--input-bg)] text-[var(--text-primary)] border border-[#ffc000]/30 rounded-lg px-3.5 py-2.5 font-display text-[14px] focus:border-[#ffc000] focus:outline-none focus:ring-[3px] focus:ring-[#ffc000]/10"
+                >
+                  <option value="">Select Unit...</option>
+                  {uniqueUnits.map(u => <option key={u} value={u}>{u}</option>)}
+                  <option value="Other">✏️ Other (type manually)</option>
+                </select>
+                {formData.unit === 'Other' && (
+                  <input type="text" placeholder="Type unit name" value={otherFields.unit} onChange={e => setOtherFields({...otherFields, unit: e.target.value})} className="mt-2 w-full bg-[var(--input-bg)] text-[var(--text-primary)] border border-[#ffc000]/30 rounded-lg px-3.5 py-2.5 font-display text-[14px] focus:border-[#ffc000] focus:outline-none focus:ring-[3px] focus:ring-[#ffc000]/10" />
+                )}
+                {formErrors.unit && <p className="text-[#ef4444] text-[11px] mt-1">{formErrors.unit}</p>}
+              </div>
+
+              {/* Field 5 - Title */}
+              <div>
+                <label className="block text-[11px] font-semibold tracking-[0.08em] uppercase text-black dark:text-[#ffc000] mb-[6px]">
+                  Title / Job Title
+                </label>
+                <select 
+                  value={formData.title}
+                  onChange={(e) => setFormData({...formData, title: e.target.value})}
+                  className="w-full bg-[var(--input-bg)] text-[var(--text-primary)] border border-[#ffc000]/30 rounded-lg px-3.5 py-2.5 font-display text-[14px] focus:border-[#ffc000] focus:outline-none focus:ring-[3px] focus:ring-[#ffc000]/10"
+                >
+                  <option value="">Select Title...</option>
+                  {uniqueTitles.map(t => <option key={t} value={t}>{t}</option>)}
+                  <option value="Other">✏️ Other (type manually)</option>
+                </select>
+                {formData.title === 'Other' && (
+                  <input type="text" placeholder="Type job title" value={otherFields.title} onChange={e => setOtherFields({...otherFields, title: e.target.value})} className="mt-2 w-full bg-[var(--input-bg)] text-[var(--text-primary)] border border-[#ffc000]/30 rounded-lg px-3.5 py-2.5 font-display text-[14px] focus:border-[#ffc000] focus:outline-none focus:ring-[3px] focus:ring-[#ffc000]/10" />
+                )}
+                {formErrors.title && <p className="text-[#ef4444] text-[11px] mt-1">{formErrors.title}</p>}
+              </div>
+
+              {/* Field 6 - Wave */}
+              <div>
+                <label className="block text-[11px] font-semibold tracking-[0.08em] uppercase text-black dark:text-[#ffc000] mb-[6px]">
+                  Wave
+                </label>
+                <select 
+                  value={formData.wave}
+                  onChange={(e) => setFormData({...formData, wave: e.target.value})}
+                  className="w-full bg-[var(--input-bg)] text-[var(--text-primary)] border border-[#ffc000]/30 rounded-lg px-3.5 py-2.5 font-display text-[14px] focus:border-[#ffc000] focus:outline-none focus:ring-[3px] focus:ring-[#ffc000]/10"
+                >
+                  <option value="">Select Wave...</option>
+                  {uniqueWaves.map(w => <option key={w} value={w}>{w}</option>)}
+                </select>
+                {formErrors.wave && <p className="text-[#ef4444] text-[11px] mt-1">{formErrors.wave}</p>}
+              </div>
+
+              {/* Field 7 - Kingdom */}
+              <div>
+                <label className="block text-[11px] font-semibold tracking-[0.08em] uppercase text-black dark:text-[#ffc000] mb-[6px]">
+                  Kingdom
+                </label>
+                <select 
+                  value={formData.kingdom}
+                  onChange={(e) => setFormData({...formData, kingdom: e.target.value})}
+                  className="w-full bg-[var(--input-bg)] text-[var(--text-primary)] border border-[#ffc000]/30 rounded-lg px-3.5 py-2.5 font-display text-[14px] focus:border-[#ffc000] focus:outline-none focus:ring-[3px] focus:ring-[#ffc000]/10"
+                >
+                  <option value="">Select Kingdom...</option>
+                  {uniqueKingdoms.map(k => <option key={k} value={k}>{k}</option>)}
+                </select>
+                {formErrors.kingdom && <p className="text-[#ef4444] text-[11px] mt-1">{formErrors.kingdom}</p>}
+              </div>
+
+              {/* Field 8 - Team */}
+              <div>
+                <label className="block text-[11px] font-semibold tracking-[0.08em] uppercase text-black dark:text-[#ffc000] mb-[6px]">
+                  Team
+                </label>
+                <select 
+                  value={formData.team}
+                  onChange={(e) => setFormData({...formData, team: e.target.value})}
+                  className="w-full bg-[var(--input-bg)] text-[var(--text-primary)] border border-[#ffc000]/30 rounded-lg px-3.5 py-2.5 font-display text-[14px] focus:border-[#ffc000] focus:outline-none focus:ring-[3px] focus:ring-[#ffc000]/10"
+                >
+                  <option value="">Select Team...</option>
+                  {TEAMS.map(t => <option key={t} value={t}>{getTeamLabel(t)}</option>)}
+                </select>
+                {formErrors.team && <p className="text-[#ef4444] text-[11px] mt-1">{formErrors.team}</p>}
+              </div>
+            </div>
+
+            <div className="flex flex-row justify-between mt-7">
+              <button 
+                onClick={() => setIsModalOpen(false)}
+                className="bg-transparent border border-[#ffc000]/40 text-[#ffc000] rounded-lg px-6 py-2.5 hover:bg-[#ffc000]/10 transition-colors"
+                disabled={isSaving}
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={handleSaveMember}
+                className="flex items-center gap-2 bg-[#ffc000] text-black font-bold rounded-lg px-6 py-2.5 hover:bg-[#e6ac00] transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+                disabled={isSaving}
+              >
+                <Save className="w-4 h-4" />
+                {isSaving ? 'Saving...' : editingMember ? 'Save Changes' : 'Save Member'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

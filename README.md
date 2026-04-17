@@ -29,7 +29,31 @@ The application uses an external JSON file located at `src/data/employees.json`.
 - **Animations**: Framer Motion (motion/react)
 - **Icons**: Lucide React
 
+## GitHub Sync Setup
+1. Create .env file in project root
+2. Add these variables:
+     VITE_GITHUB_TOKEN=your_fine_grained_token
+     VITE_GITHUB_REPO=owner/repo-name
+     VITE_GITHUB_FILE_PATH=public/employees.json
+     VITE_GITHUB_BRANCH=main
+3. Make sure .env is in .gitignore
+4. Token needs Contents: Read & Write permission
+
 ## Version History
+v1.0.013 - Refactored CSS Colors
+           Fixed Light Mode colors to map #ffffff to #000000
+           Excluded prefixed dark mode colors from being affected
+
+v1.0.012 - Add New Member form (facilitator only)
+           Edit existing member form
+           GitHub API sync for employees.json
+           Dynamic dropdowns from live data
+           "Other" option for manual entry
+           Toast notifications (success/error)
+           Edit button on member cards
+           githubSync.ts utility created
+           Fine-grained token support
+
 v1.0.011 - Light mode text colors fixed,
            Details/labels use black in light mode,
            Name stays gold in both modes,

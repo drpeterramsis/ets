@@ -1,14 +1,16 @@
 import React, { useState, useMemo, useRef } from 'react';
-import { ChevronRight, Waves, Crown, Users, ArrowLeft, Building } from 'lucide-react';
+import { ChevronRight, Waves, Crown, Users, ArrowLeft, Building, Pencil } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import type { Employee } from '../types';
 import { getTeamIcon } from '../App';
 
 interface DrillDownProps {
   data: Employee[];
+  onEdit?: (member: Employee) => void;
+  userRole?: string;
 }
 
-export const DrillDown = ({ data }: DrillDownProps) => {
+export const DrillDown = ({ data, onEdit, userRole }: DrillDownProps) => {
   const [wave, setWave] = useState<string | null>(null);
   const [kingdom, setKingdom] = useState<string | null>(null);
   const [team, setTeam] = useState<string | null>(null);
@@ -251,11 +253,20 @@ export const DrillDown = ({ data }: DrillDownProps) => {
                    transition={{ delay: idx * 0.03 }}
                    className="bg-[rgba(0,0,0,0.03)] dark:bg-[rgba(255,192,0,0.05)] border border-[rgba(0,0,0,0.12)] dark:border-[rgba(255,192,0,0.2)] p-5 rounded-3xl flex flex-col gap-3"
                  >
-                   <div className="flex items-center gap-4 border-b border-[rgba(0,0,0,0.12)] dark:border-[rgba(255,192,0,0.2)] pb-3">
+                   <div className="flex items-center gap-4 border-b border-[rgba(0,0,0,0.12)] dark:border-[rgba(255,192,0,0.2)] pb-3 relative">
                      <div className="w-12 h-12 rounded-2xl bg-white dark:bg-[var(--bg-main)] flex items-center justify-center text-black dark:text-[#ffc000] font-black border border-[rgba(0,0,0,0.12)] dark:border-[rgba(255,192,0,0.2)]">
                        {m["Employee Name"].charAt(0)}
                      </div>
-                     <h4 className="font-black text-lg leading-tight text-black dark:text-white">{m["Employee Name"]}</h4>
+                     <h4 className="font-black text-lg leading-tight text-black dark:text-white pr-8">{m["Employee Name"]}</h4>
+                     {(userRole === 'facilitator' || userRole === 'superuser') && onEdit && (
+                       <button
+                         onClick={() => onEdit(m)}
+                         title="Edit member"
+                         className="absolute top-0 right-0 w-[30px] h-[30px] bg-transparent border border-[rgba(255,192,0,0.3)] rounded-md flex items-center justify-center text-[rgba(0,0,0,0.5)] dark:text-[rgba(255,192,0,0.6)] hover:border-[#ffc000] hover:text-[#000000] dark:hover:text-[#ffc000] transition-all duration-200"
+                       >
+                         <Pencil className="w-4 h-4" />
+                       </button>
+                     )}
                    </div>
                    <div className="space-y-1 text-xs font-bold leading-relaxed">
                      <p><span className="text-black dark:text-[#ffc000]">Division:</span> <span className="text-[#111111] dark:text-white">{m.Division}</span></p>
