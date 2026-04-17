@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import { ChevronRight, Waves, Crown, Users, ArrowLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import type { Employee } from '../types';
@@ -12,6 +12,33 @@ export const DrillDown = ({ data }: DrillDownProps) => {
   const [wave, setWave] = useState<string | null>(null);
   const [kingdom, setKingdom] = useState<string | null>(null);
   const [team, setTeam] = useState<string | null>(null);
+
+  const touchStartX = useRef<number>(0);
+  const touchEndX = useRef<number>(0);
+  const SWIPE_THRESHOLD = 80; // px
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    touchEndX.current = e.changedTouches[0].clientX;
+    const diff = touchEndX.current - touchStartX.current;
+    if (diff > SWIPE_THRESHOLD) {
+      // Swipe RIGHT → go back one level
+      handleSwipeBack();
+    }
+  };
+
+  const handleSwipeBack = () => {
+    if (team) {
+      setTeam(null);        // Members → Teams
+    } else if (kingdom) {
+      setKingdom(null);     // Teams → Kingdoms
+    } else if (wave) {
+      setWave(null);        // Kingdoms → Waves
+    }
+  };
 
   const uniqueWaves = useMemo(() => Array.from(new Set(data.map(e => e.Wave))), [data]);
   
@@ -36,18 +63,45 @@ export const DrillDown = ({ data }: DrillDownProps) => {
   const resetFromKingdom = () => { setKingdom(null); setTeam(null); };
 
   const BackButton = ({ onClick, label }: { onClick: () => void, label: string }) => (
-    <motion.button 
-      initial={{ opacity: 0, x: -20 }}
-      animate={{ opacity: 1, x: 0 }}
-      onClick={onClick}
-      className="flex items-center gap-2 px-4 py-2 border-2 border-[var(--accent-color)] text-[var(--accent-color)] rounded-full font-bold text-xs hover:bg-[var(--accent-color)] hover:text-black transition-all"
-    >
-      <ArrowLeft className="w-3.5 h-3.5" /> {label}
-    </motion.button>
+    <div className="flex flex-col gap-2">
+      <motion.button 
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        onClick={onClick}
+        className="flex items-center gap-2 px-4 py-2 border-2 border-[var(--accent-color)] text-[var(--accent-color)] rounded-full font-bold text-xs hover:bg-[var(--accent-color)] hover:text-black transition-all"
+      >
+        <ArrowLeft className="w-3.5 h-3.5" /> {label}
+      </motion.button>
+      
+      {/* Visual Swipe Hint */}
+      <div className="hidden sm:hidden md:hidden lg:hidden" style={{ display: 'contents' }}>
+        <style dangerouslySetInnerHTML={{ __html: `
+          @media (hover: none) and (pointer: coarse) {
+            .swipe-hint { display: block !important; }
+          }
+        ` }} />
+        <p className="swipe-hint hidden text-[11px] text-[rgba(255,192,0,0.4)] text-center font-medium">
+          ← Swipe right to go back
+        </p>
+      </div>
+      
+      <motion.div 
+        initial={{ opacity: 0, x: -10 }} 
+        animate={{ opacity: 0.4, x: 0 }}
+        transition={{ delay: 0.5, duration: 0.4 }}
+        className="hidden md:flex items-center gap-1 text-[10px] text-[rgba(255,192,0,0.3)] pointer-events-none"
+      >
+        <ArrowLeft className="w-3 h-3" /> swipe hint text omitted for desktop
+      </motion.div>
+    </div>
   );
 
   return (
-    <div className="space-y-8">
+    <div 
+      className="space-y-8"
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+    >
       {/* Non-clickable Breadcrumbs */}
       <div className="flex flex-wrap items-center gap-2 text-[10px] sm:text-xs font-black uppercase tracking-widest text-[var(--accent-color)] opacity-80">
         <span className="flex items-center gap-1.5">🌊 Waves</span>

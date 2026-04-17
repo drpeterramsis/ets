@@ -1,4 +1,4 @@
-# Employee Wave Portal
+# Employee Wave Portal (v1.0.007)
 
 A professional, secure employee dashboard built with React, Tailwind CSS, and Framer Motion. This application allows employees to sign in using their email and employee number to view their current wave assignment and team details.
 
@@ -30,7 +30,17 @@ The application uses an external JSON file located at `src/data/employees.json`.
 - **Icons**: Lucide React
 
 ## Version History
-### v1.0.009 (Current)
+### v1.0.007
+- Profile card split into 2 rows (identity row + info cards row)
+- Name no longer collapses on desktop
+- Info cards in 2x2 grid on mobile
+- Logout moved into fixed footer bar
+- Footer: developer credit + version + logout
+- Swipe right to go back in drill-down
+- Swipe hint shown on touch devices
+- Mobile header always shows EVA SIM
+
+### v1.0.009
 - **Profile card fully redesigned**: New horizontal layout with 5 distinct sections and unified accent styling.
 - **Wave Data Modularized**: Wave assignments split into separate WAVE DATE and WAVE TIME cards for clarity (split by helper logic).
 - **Role-Based DOM Enforcement**: Strict access matrix (Employee/Facilitator/Superuser) with complete removal of restricted sections from the DOM for employees.
@@ -45,7 +55,7 @@ The application uses an external JSON file located at `src/data/employees.json`.
 - **Branding Update**: Implemented unique welcome messages and badges (⭐) for superuser status.
 - **Navigation Polish**: Corrected facilitator login bypass for administrative accounts.
 
-### v1.0.007
+### Previous v1.0.007
 - **Black + Gold (#ffc000) theme applied**: Complete visual overhaul for institution branding.
 - **Enhanced Member Cards**: Added Unit, Title, and ID fields with professional labeling.
 - **Back Navigation Buttons**: Replaced text links with pill-shaped styled buttons at all drill-down levels.
