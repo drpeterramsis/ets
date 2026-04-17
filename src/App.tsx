@@ -389,10 +389,12 @@ export default function App() {
     const newEmp: Employee = {
       "Employee Number": formData.id,
       "Employee Name": formData.name,
+      "Email Address": "", // Added to satisfy Employee type
       Division: finalDivision,
       Unit: finalUnit,
       Title: finalTitle,
-      Job: finalTitle, // duplicate for compatibility
+      Job: finalTitle,
+      "Level": "L1", // Added to satisfy Employee type
       Wave: formData.wave,
       Kingdom: formData.kingdom,
       Team: formData.team

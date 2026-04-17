@@ -1,4 +1,5 @@
-# Employee Wave Portal (v1.0.011)
+# Employee Wave Portal (v1.0.030)
+
 
 A professional, secure employee dashboard built with React, Tailwind CSS, and Framer Motion. This application allows employees to sign in using their email and employee number to view their current wave assignment and team details.
 
@@ -40,6 +41,13 @@ The application uses an external JSON file located at `src/data/employees.json`.
 4. Token needs Contents: Read & Write permission
 
 ## Version History
+v1.0.030 - Fix: Restored compact grid layout (Kingdoms/Tables) as the primary view.
+           - Feature: Added Title and Unit as subtitle inside the team details popup.
+           - Style: Improved popup layout with better hierarchy and contrast.
+v1.0.029 - Fix: Switched Seating Map to detailed version and refined Title/Unit subtitles styling in tables and popups.
+v1.0.028 - Map Grid: Applied requested style adjustments.
+v1.0.027 - Map Popup: Wave icon replacement (⏰) and added Title/Unit as subtitle to member names in popup details.
+v1.0.026 - Map Popup: Added Title and Unit as subtitle to member names in popup details
 v1.0.025 - Map Grid: mobile layout adjusted to 1 column per 5 kingdoms (1x5)
 v1.0.024 - Map Grid: mobile layout optimized to 5 columns per row
 v1.0.023 - Map Grid: optimized to 5 tables per row

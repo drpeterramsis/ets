@@ -5,28 +5,27 @@ import { Employee } from '../types';
 
 interface SeatingMapProps {
   employees: Employee[];
-  loggedInEmployee: Employee;
+  loggedInEmployee: Employee | null;
   userRole: string;
 }
 
 const getTeamIcon = (team: string) => {
-  switch (team) {
-    case 'Electricians': return '⚡';
-    case 'Engineering': return '⚙️';
-    case 'Gold': return '🥇';
-    case 'Mushroom': return '🍄';
-    case 'Plumber': return '🔧';
-    default: return '👥';
-  }
+  const t = team.toLowerCase();
+  if (t.includes('electric')) return '⚡';
+  if (t.includes('engineer')) return '⚙️';
+  if (t.includes('gold')) return '🥇';
+  if (t.includes('mushroom')) return '🍄';
+  if (t.includes('plumb')) return '🔧';
+  return '👥';
 };
 
 export const SeatingMap: React.FC<SeatingMapProps> = ({ employees, loggedInEmployee, userRole }) => {
-  const allWaves = useMemo(() => Array.from(new Set(employees.map(e => e.Wave.split('_')[0]))), [employees]);
-  const [selectedWave, setSelectedWave] = useState(loggedInEmployee.Wave.split('_')[0]);
+  const allWaves = useMemo(() => Array.from(new Set(employees.map(e => e.Wave.replace(/_/g, ' ⏰ ')))), [employees]);
+  const [selectedWave, setSelectedWave] = useState(loggedInEmployee?.Wave.replace(/_/g, ' ⏰ ') || allWaves[0] || '');
   const [selectedTeam, setSelectedTeam] = useState<{kingdom: string, team: string, members: Employee[]} | null>(null);
 
   const waveEmployees = useMemo(() => 
-    employees.filter(e => e.Wave.split('_')[0] === selectedWave), 
+    employees.filter(e => e.Wave.replace(/_/g, ' ⏰ ') === selectedWave), 
     [employees, selectedWave]
   );
 
@@ -92,11 +91,16 @@ export const SeatingMap: React.FC<SeatingMapProps> = ({ employees, loggedInEmplo
                     )}
                     <h4 className="font-bold text-[#000000] dark:text-[#ffffff] mb-2 text-sm">{getTeamIcon(team)} {team}</h4>
                     <div className="border-t border-[rgba(255,255,255,0.08)] my-2" />
-                    <div className="space-y-1">
+                    <div className="space-y-1.5 pt-1">
                       {teamMembers.map((m, i) => (
-                        <div key={i} className={`text-[13px] text-[#333333] dark:text-[#cccccc] flex items-center gap-1.5 ${m["Employee Number"] === loggedInEmployee["Employee Number"] ? 'text-[#ffc000] font-bold' : ''}`}>
-                          {m["Employee Number"] === loggedInEmployee["Employee Number"] && '★ '}
-                          {m["Employee Name"]}
+                        <div key={i} className={`flex flex-col mb-1 ${loggedInEmployee && m["Employee Number"] === loggedInEmployee["Employee Number"] ? 'text-[#ffc000]' : ''}`}>
+                          <div className={`flex items-center gap-1.5 font-bold text-[13px] ${loggedInEmployee && m["Employee Number"] === loggedInEmployee["Employee Number"] ? 'text-[#ffc000]' : 'text-[#1a1a1a] dark:text-[#f0f0f0]'}`}>
+                            {loggedInEmployee && m["Employee Number"] === loggedInEmployee["Employee Number"] && '★ '}
+                            {m["Employee Name"]}
+                          </div>
+                          <div className="text-[10px] pl-[18px] opacity-70 text-[#666666] dark:text-[#aaaaaa] font-medium leading-[1.2]">
+                            {m["Title"]}{m["Unit"] ? ` • ${m["Unit"]}` : ''}
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -118,10 +122,15 @@ export const SeatingMap: React.FC<SeatingMapProps> = ({ employees, loggedInEmplo
             <div className="bg-white dark:bg-[#1a1a1a] border-2 border-[#ffc000] rounded-2xl p-7 w-full max-w-[360px]">
               <h4 className="text-[#ffc000] font-bold text-lg">{getTeamIcon(selectedTeam.team)} {selectedTeam.team}</h4>
               <p className="text-[#888888] text-[12px] mb-4">Kingdom {selectedTeam.kingdom} • Wave {selectedWave}</p>
-              <div className="space-y-2 mb-6">
+              <div className="space-y-3 mb-6 mt-4">
                 {selectedTeam.members.map((m, i) => (
-                  <div key={i} className={`flex items-center gap-2 py-2 border-b border-[rgba(255,255,255,0.06)] text-[14px] ${m["Employee Number"] === loggedInEmployee["Employee Number"] ? 'bg-[#ffc000]/10 text-[#ffc000] px-3 rounded-lg font-bold' : 'text-black dark:text-white'}`}>
-                    👤 {m["Employee Number"] === loggedInEmployee["Employee Number"] && '★ '} {m["Employee Name"]}
+                  <div key={i} className={`flex flex-col py-3 px-3 rounded-xl border border-[rgba(255,255,255,0.06)] dark:bg-white/[0.02] ${loggedInEmployee && m["Employee Number"] === loggedInEmployee["Employee Number"] ? 'bg-[#ffc000]/10 border-[#ffc000]/30' : 'bg-[#f9f9f9] dark:bg-black/20'}`}>
+                    <div className={`flex items-center gap-2 font-bold text-[15px] ${loggedInEmployee && m["Employee Number"] === loggedInEmployee["Employee Number"] ? 'text-[#ffc000]' : 'text-black dark:text-white'}`}>
+                      👤 {loggedInEmployee && m["Employee Number"] === loggedInEmployee["Employee Number"] && '★ '} {m["Employee Name"]}
+                    </div>
+                    <div className="text-[12px] font-medium opacity-60 ml-7 text-[#444444] dark:text-[#cccccc] mt-0.5">
+                      {m["Title"]}{m["Unit"] ? ` • ${m["Unit"]}` : ''}
+                    </div>
                   </div>
                 ))}
               </div>

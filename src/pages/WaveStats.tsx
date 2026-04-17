@@ -6,7 +6,11 @@ interface WaveStatsProps {
 }
 
 export const WaveStats: React.FC<WaveStatsProps> = ({ employees }) => {
-  const allWaves = useMemo(() => Array.from(new Set(employees.map(e => String(e.Wave)))).sort((a,b)=>a.localeCompare(b)), [employees]);
+  const allWaves = useMemo(() => 
+    Array.from(new Set(employees.map(e => String(e.Wave))))
+      .sort((a, b) => (a as string).localeCompare(b as string)), 
+    [employees]
+  );
   const [selectedWaveId, setSelectedWaveId] = useState<string | null>(allWaves[0] || null);
   const [selectedTeam, setSelectedTeam] = useState<{kingdom: string, team: string, members: Employee[]} | null>(null);
 
