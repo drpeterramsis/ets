@@ -117,7 +117,7 @@ export default function App() {
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'loading' } | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [formData, setFormData] = useState({
-    id: '', name: '', division: '', unit: '', title: '', wave: '', kingdom: '', team: ''
+    id: '', name: '', division: '', unit: '', title: '', wave: '', kingdom: '', team: '', level: '1'
   });
   const [otherFields, setOtherFields] = useState({
     division: '', unit: '', title: ''
@@ -243,7 +243,7 @@ export default function App() {
 
   const openAddModal = () => {
     setEditingMember(null);
-    setFormData({ id: '', name: '', division: '', unit: '', title: '', wave: '', kingdom: '', team: '' });
+    setFormData({ id: '', name: '', division: '', unit: '', title: '', wave: '', kingdom: '', team: '', level: '1' });
     setOtherFields({ division: '', unit: '', title: '' });
     setFormErrors({});
     setIsModalOpen(true);
@@ -260,7 +260,8 @@ export default function App() {
       title: uniqueTitles.includes(member.Title) ? member.Title : 'Other',
       wave: member.Wave,
       kingdom: member.Kingdom,
-      team: member.Team
+      team: member.Team,
+      level: member.Level || '1'
     });
     
     setOtherFields({
@@ -401,7 +402,7 @@ export default function App() {
       Unit: finalUnit,
       Title: finalTitle,
       Job: finalTitle,
-      "Level": "L1", // Added to satisfy Employee type
+      "Level": formData.level,
       Wave: formData.wave,
       Kingdom: formData.kingdom,
       Team: formData.team
@@ -870,6 +871,21 @@ export default function App() {
                 {formErrors.title && <p className="text-[#ef4444] text-[11px] mt-1">{formErrors.title}</p>}
               </div>
 
+              {/* Field 5.5 - Level */}
+              <div>
+                <label className="block text-[11px] font-semibold tracking-[0.08em] uppercase text-black dark:text-[#ffc000] mb-[6px]">
+                  Level
+                </label>
+                <select 
+                  value={formData.level}
+                  onChange={(e) => setFormData({...formData, level: e.target.value})}
+                  className="w-full bg-[var(--input-bg)] text-[var(--text-primary)] border border-[#ffc000]/30 rounded-lg px-3.5 py-2.5 font-display text-[14px] focus:border-[#ffc000] focus:outline-none focus:ring-[3px] focus:ring-[#ffc000]/10"
+                >
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                </select>
+              </div>
+
               {/* Field 6 - Wave */}
               <div>
                 <label className="block text-[11px] font-semibold tracking-[0.08em] uppercase text-black dark:text-[#ffc000] mb-[6px]">
@@ -1079,4 +1095,4 @@ export default function App() {
   );
 }
 
-// v1.0.042
+// v1.0.043
