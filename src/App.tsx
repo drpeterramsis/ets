@@ -190,7 +190,7 @@ export default function App() {
             <div className="w-full max-w-sm space-y-8">
               <div className="text-center space-y-2">
                 <div className="w-16 h-16 bg-[var(--accent-color)] rounded-2xl mx-auto flex items-center justify-center shadow-xl shadow-[var(--accent-color)]/20 rotate-3">
-                  <Shield className="w-8 h-8 text-white" />
+                  <Shield className="w-8 h-8 text-black" />
                 </div>
                 <h1 className="text-3xl font-display font-black tracking-tight mt-6">EVA Training</h1>
                 <p className="text-[var(--text-secondary)] font-medium">Simulation Management Portal</p>
@@ -224,7 +224,7 @@ export default function App() {
                             {error}
                           </motion.p>
                         )}
-                        <button type="submit" className="w-full py-4 bg-[var(--accent-color)] text-white rounded-2xl font-black shadow-lg shadow-[var(--accent-color)]/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2">
+                        <button type="submit" className="w-full py-4 bg-[var(--accent-color)] text-black rounded-2xl font-black shadow-lg shadow-[var(--accent-color)]/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2">
                           CONTINUE <ArrowRight className="w-5 h-5" />
                         </button>
                         <a 
@@ -251,7 +251,7 @@ export default function App() {
                           <p className="text-sm text-[var(--text-secondary)] font-medium">Is this you? Please confirm to continue.</p>
                        </div>
                        <div className="grid grid-cols-2 gap-3">
-                          <button onClick={confirmLogin} className="py-4 bg-[var(--accent-color)] text-white rounded-2xl font-black flex items-center justify-center gap-2 text-xs hover:bg-opacity-90">
+                          <button onClick={confirmLogin} className="py-4 bg-[var(--accent-color)] text-black rounded-2xl font-black flex items-center justify-center gap-2 text-xs hover:bg-opacity-90">
                              <CheckCircle2 className="w-4 h-4" /> YES, IT'S ME
                           </button>
                           <button onClick={cancelLogin} className="py-4 bg-red-500/10 text-red-500 border border-red-500/20 rounded-2xl font-black flex items-center justify-center gap-2 text-xs hover:bg-red-500/20">
@@ -309,13 +309,13 @@ export default function App() {
                   <div className="flex bg-[var(--bg-card)] p-1 rounded-2xl border border-[var(--border-color)] shadow-sm self-start">
                      <button 
                         onClick={() => setActiveTab('drill')}
-                        className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold text-xs transition-all ${activeTab === 'drill' ? 'bg-[var(--accent-color)] text-white shadow-md' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'}`}
+                        className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold text-xs transition-all ${activeTab === 'drill' ? 'bg-[var(--accent-color)] text-black shadow-md' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'}`}
                       >
                         <BarChart3 className="w-4 h-4" /> DRILL-DOWN
                      </button>
                      <button 
                         onClick={() => setActiveTab('search')}
-                        className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold text-xs transition-all ${activeTab === 'search' ? 'bg-[var(--accent-color)] text-white shadow-md' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'}`}
+                        className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold text-xs transition-all ${activeTab === 'search' ? 'bg-[var(--accent-color)] text-black shadow-md' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'}`}
                       >
                         <SearchIcon className="w-4 h-4" /> SEARCH ENGINE
                      </button>
