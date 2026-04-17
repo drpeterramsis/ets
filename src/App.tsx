@@ -25,6 +25,16 @@ import {
 import employeeData from './data/employees.json';
 import type { Employee, ThemeMode } from './types';
 
+export const getTeamIcon = (teamName: string): string => {
+  const name = teamName.toLowerCase().trim();
+  if (name.includes('electric'))  return '⚡';
+  if (name.includes('engineer'))  return '⚙️';
+  if (name.includes('gold'))      return '🥇';
+  if (name.includes('mushroom'))  return '🍄';
+  if (name.includes('plumb'))     return '🔧';
+  return '👥';
+};
+
 // Components
 import { ThemeToggle } from './components/ThemeToggle';
 import { Footer } from './components/Footer';
@@ -117,9 +127,10 @@ export default function App() {
         {!user ? (
           <motion.div
             key="login"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
             className="flex-1 flex flex-col items-center justify-center p-4"
           >
             <div className="w-full max-w-sm space-y-8">
@@ -150,14 +161,22 @@ export default function App() {
                             className="w-full px-5 py-4 bg-[var(--input-bg)] border border-[var(--border-color)] rounded-2xl focus:ring-4 focus:ring-[var(--accent-color)]/10 focus:border-[var(--accent-color)] transition-all outline-none font-bold text-lg"
                           />
                         </div>
-                        {error && <p className="text-red-500 text-xs font-bold transition-all animate-pulse">{error}</p>}
+                        {error && (
+                          <motion.p 
+                            animate={{ x: [0, -10, 10, -10, 10, 0] }}
+                            transition={{ duration: 0.4 }}
+                            className="text-red-500 text-xs font-bold transition-all"
+                          >
+                            {error}
+                          </motion.p>
+                        )}
                         <button type="submit" className="w-full py-4 bg-[var(--accent-color)] text-white rounded-2xl font-black shadow-lg shadow-[var(--accent-color)]/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2">
                           CONTINUE <ArrowRight className="w-5 h-5" />
                         </button>
                       </form>
                     </motion.div>
                   ) : (
-                    <motion.div key="s2" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="text-center space-y-8">
+                    <motion.div key="s2" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="text-center space-y-8">
                        <div className="space-y-4">
                           <div className="w-20 h-20 bg-[var(--input-bg)] rounded-full mx-auto flex items-center justify-center text-[var(--accent-color)] border-4 border-[var(--border-color)]">
                              <UserIcon className="w-10 h-10" />
@@ -200,7 +219,7 @@ export default function App() {
                      </div>
                      <div className="hidden sm:block">
                         <h1 className="font-display font-black text-xl leading-none">EVA SIM</h1>
-                        <p className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-[0.2em] mt-1">Version 1.0.004</p>
+                        <p className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-[0.2em] mt-1">Version 1.0.007</p>
                      </div>
                   </div>
 
@@ -237,7 +256,12 @@ export default function App() {
                </div>
 
                {/* Profile Card */}
-               <div className="bg-[var(--bg-card)] border border-[var(--border-color)] rounded-[2.5rem] p-8 relative overflow-hidden">
+               <motion.div 
+                 initial={{ opacity: 0, y: 20 }}
+                 animate={{ opacity: 1, y: 0 }}
+                 transition={{ delay: 0.1 }}
+                 className="bg-[var(--bg-card)] border border-[var(--border-color)] rounded-[2.5rem] p-8 relative overflow-hidden"
+               >
                    <div className="absolute right-0 top-0 w-32 h-32 bg-[var(--accent-color)]/5 rounded-full -translate-y-1/2 translate-x-1/2" />
                    
                    <div className="flex flex-col lg:flex-row gap-8 items-start lg:items-center">
@@ -262,17 +286,17 @@ export default function App() {
                       </div>
 
                       <div className="flex flex-wrap gap-4 w-full lg:w-auto">
-                         <div className="flex-1 lg:flex-initial bg-blue-500/10 border border-blue-500/20 px-8 py-4 rounded-3xl text-center min-w-[140px]">
-                            <p className="text-[9px] font-black text-blue-500 uppercase tracking-widest mb-1">Assigned Wave</p>
-                            <p className="text-lg font-black text-blue-500">{user.Wave.replace(/_/g, '⏰')}</p>
+                         <div className="flex-1 lg:flex-initial bg-[var(--accent-color)]/10 border border-[var(--accent-color)]/20 px-8 py-4 rounded-3xl text-center min-w-[140px]">
+                            <p className="text-[9px] font-black text-[var(--accent-color)] uppercase tracking-widest mb-1">Assigned Wave</p>
+                            <p className="text-lg font-black text-[var(--accent-color)]">{user.Wave.replace(/_/g, '⏰')}</p>
                          </div>
-                         <div className="flex-1 lg:flex-initial bg-amber-500/10 border border-amber-500/20 px-8 py-4 rounded-3xl text-center min-w-[140px]">
-                            <p className="text-[9px] font-black text-amber-500 uppercase tracking-widest mb-1">Tactical Team</p>
-                            <p className="text-lg font-black text-amber-500">{user.Team}</p>
+                         <div className="flex-1 lg:flex-initial bg-[var(--accent-color)]/10 border border-[var(--accent-color)]/20 px-8 py-4 rounded-3xl text-center min-w-[140px]">
+                            <p className="text-[9px] font-black text-[var(--accent-color)] uppercase tracking-widest mb-1">Tactical Team</p>
+                            <p className="text-lg font-black text-[var(--accent-color)]">{getTeamIcon(user.Team)} {user.Team}</p>
                          </div>
                       </div>
                    </div>
-               </div>
+               </motion.div>
 
                {/* Feature Tabs */}
                <div className="min-h-[400px]">

@@ -30,14 +30,17 @@ The application uses an external JSON file located at `src/data/employees.json`.
 - **Icons**: Lucide React
 
 ## Version History
-### v1.0.005 (Current)
-- **Stability & Performance**: Fixed ESM compatibility issues in build configuration for broader deployment support (Vercel).
-- **Data Robustness**: Enhanced type definitions to handle nullable fields in large datasets.
-- **Data Expansion**: Integrated a comprehensive dataset of 13,000+ records with full organizational hierarchy.
-- **UI Consistency**: Standardized document titles and metadata across all views.
+### v1.0.007 (Current)
+- **Black + Gold (#ffc000) theme applied**: Complete visual overhaul for institution branding.
+- **Enhanced Member Cards**: Added Unit, Title, and ID fields with professional labeling.
+- **Back Navigation Buttons**: Replaced text links with pill-shaped styled buttons at all drill-down levels.
+- **Search Optimization**: Kingdom and ID search now triggers at 1 character for rapid access.
+- **Team Intelligence**: Added team-specific icons for the five core divisions (Electricians, Engineering, Gold, Mushroom, Plumber).
+- **SEO & Social**: Integrated full meta tags and custom OG social thumbnail for EVA Annual 2026.
+- **Framer Motion Animations**: Implemented staggered entrances, fade-ups, and interactive feedback throughout the portal.
 
-### v1.0.004
-- **Advanced Navigation**: Implemented Wave -> Kingdom -> Team -> Members cascading drill-down.
+### v1.0.005
+- **Stability & Performance**: Fixed ESM compatibility issues in build configuration.
 - **Search Engine**: Added professional search bar with field-specific filtering (Employee Number, Name, Title, etc.).
 - **Theme Engine**: Integrated Light/Dark mode with persistence in `localStorage`.
 - **UI Transformation**: Replaced underscores in Wave names with clock emoji (⏰).
