@@ -63,24 +63,30 @@ export const WaveStats: React.FC<WaveStatsProps> = ({ employees }) => {
 
       {/* SECTION B */}
       {selectedWaveId && breakdownData && (
-        <div className="pt-4 border-t">
+        <div className="pt-4 border-t space-y-6">
           <h3 className="font-bold text-lg mb-4">Breakdown: Wave {selectedWaveId}</h3>
-          <table className="w-full text-left border rounded-lg overflow-hidden">
-            <thead className="bg-gray-100 dark:bg-gray-900">
-              <tr><th className="p-2">Kingdom</th><th className="p-2">Team</th><th className="p-2">Members</th></tr>
-            </thead>
-            <tbody>
-              {Object.entries(breakdownData).sort().map(([k, teams]) => 
-                Object.entries(teams).sort().map(([t, members]) => (
-                  <tr key={`${k}-${t}`} className="border-b hover:bg-gray-50 dark:hover:bg-gray-900 cursor-pointer" onClick={() => setSelectedTeam({kingdom: k, team: t, members})}>
-                    <td className="p-2">{k}</td>
-                    <td className="p-2">{t}</td>
-                    <td className="p-2">{members.length}</td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+          {Object.entries(breakdownData).sort().map(([k, teams]) => (
+            <div key={k} className="border border-[#ffc000]/30 rounded-lg overflow-hidden">
+               <div className="bg-[#ffc000]/10 p-2 font-bold text-[#ffc000] border-b border-[#ffc000]/30">Kingdom {k}</div>
+               <table className="w-full text-left">
+                  <thead className="text-gray-500 bg-gray-50 dark:bg-gray-800 text-xs uppercase">
+                    <tr><th className="p-2">Team</th><th className="p-2">Members</th></tr>
+                  </thead>
+                  <tbody>
+                    {Object.entries(teams).sort().map(([t, members]) => (
+                      <tr key={`${k}-${t}`} className="border-b hover:bg-gray-50 dark:hover:bg-gray-900 cursor-pointer" onClick={() => setSelectedTeam({kingdom: k, team: t, members})}>
+                        <td className="p-2 font-medium flex items-center gap-2">
+                           {/* Team Icon (helper function defined in SeatingMap usually, but added inline here for simplicity) */}
+                           {t === 'Electricians' ? '⚡' : t === 'Engineering' ? '⚙️' : t === 'Gold' ? '🥇' : t === 'Mushroom' ? '🍄' : t === 'Plumber' ? '🔧' : '👥'} 
+                           {t}
+                        </td>
+                        <td className="p-2">{members.length}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+               </table>
+            </div>
+          ))}
         </div>
       )}
 
