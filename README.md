@@ -40,6 +40,9 @@ The application uses an external JSON file located at `src/data/employees.json`.
 4. Token needs Contents: Read & Write permission
 
 ## Version History
+v1.0.014 - Hidden Add/Edit member forms temporarily due to GitHub Sync issues
+           Reverted Light Mode colors from black to white to fix unreadable cards
+
 v1.0.013 - Refactored CSS Colors
            Fixed Light Mode colors to map #ffffff to #000000
            Excluded prefixed dark mode colors from being affected

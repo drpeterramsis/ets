@@ -552,12 +552,14 @@ export default function App() {
                {(user.role === 'facilitator' || user.role === 'superuser') && (
                  <div className="min-h-[400px]">
                     <div className="mb-4">
+                      {/* Hidden due to Github sync Failed
                       <button 
                         onClick={openAddModal}
                         className="flex items-center gap-2 px-[22px] py-[10px] bg-transparent border border-[#ffc000] rounded-full text-[#ffc000] font-display font-semibold text-[14px] hover:bg-[#ffc000]/10 transition-all cursor-pointer"
                       >
                         <UserPlus className="w-4 h-4" /> + Add New Member
                       </button>
+                      */}
                     </div>
                     <AnimatePresence mode="wait">
                       {activeTab === 'drill' ? (
@@ -567,7 +569,8 @@ export default function App() {
                                 <h3 className="text-xl font-display font-black tracking-tight">Wave Drill-Down</h3>
                                 <p className="text-sm text-[var(--text-secondary)]">Browse institutional structure from Wave to individual Teams.</p>
                              </div>
-                             <DrillDown data={employees} onEdit={openEditModal} userRole={user.role} />
+                             {/* Passed undefined to onEdit temporarily to hide Edit Member */ }
+                             <DrillDown data={employees} onEdit={undefined} userRole={user.role} />
                           </div>
                        </motion.div>
                     ) : (
