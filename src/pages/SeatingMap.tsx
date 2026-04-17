@@ -109,8 +109,13 @@ export const SeatingMap: React.FC<SeatingMapProps> = ({ employees, loggedInEmplo
       {/* Modal - Enhanced with Subtitles */}
       {selectedTeam && (
         <div className="fixed inset-0 bg-black/90 z-[9999] flex items-center justify-center p-4 backdrop-blur-sm" onClick={() => setSelectedTeam(null)}>
-          <div className="bg-white dark:bg-[#1a1a1a] border-2 border-[#ffc000] rounded-2xl p-7 w-full max-w-[360px]" onClick={e => e.stopPropagation()}>
-            <h4 className="text-[#ffc000] font-bold text-lg mb-1">{getTeamIcon(selectedTeam.team)} {selectedTeam.team}</h4>
+          <div className="bg-white dark:bg-[#1a1a1a] border-2 border-[#ffc000] rounded-2xl p-4 w-full max-w-[360px]" onClick={e => e.stopPropagation()}>
+            <h4 className="text-[#ffc000] font-bold text-lg mb-1 flex items-center justify-between">
+              <span>{getTeamIcon(selectedTeam.team)} {selectedTeam.team}</span>
+              <span className="bg-[#ffc000] text-black text-[10px] px-2 py-0.5 rounded-full font-black">
+                {selectedTeam.members.length} MEMBERS
+              </span>
+            </h4>
             <div className="text-[#888888] text-[11px] mb-4 flex items-center gap-2">
               <span className="bg-[#ffc000]/10 text-[#ffc000] px-1.5 rounded">Kingdom {selectedTeam.kingdom}</span>
               <span>•</span>
@@ -118,7 +123,7 @@ export const SeatingMap: React.FC<SeatingMapProps> = ({ employees, loggedInEmplo
             </div>
             
             <div className="space-y-3 mb-6 mt-4 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
-              {selectedTeam.members.map((m, i) => {
+              {[...selectedTeam.members].sort((a, b) => a["Employee Name"].localeCompare(b["Employee Name"])).map((m, i) => {
                 const isLevel2 = String(m.Level) === '2';
                 return (
                   <div key={i} className={`flex flex-col py-3 px-3 rounded-xl border border-[rgba(255,192,0,0.1)] transition-all ${loggedInEmployee && m["Employee Number"] === loggedInEmployee["Employee Number"] ? 'bg-[#ffc000]/10 border-[#ffc000]/30 ring-1 ring-[#ffc000]/20' : 'bg-[#f9f9f9] dark:bg-black/40'} relative group/member`}>

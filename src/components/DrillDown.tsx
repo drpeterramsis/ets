@@ -258,7 +258,7 @@ export const DrillDown = ({ data, onEdit, onDelete, userRole }: DrillDownProps) 
                 <span className="bg-[var(--accent-color)] text-black text-[10px] font-black px-3 py-1 rounded-full">{filteredMembers.length} Members</span>
              </div>
              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-               {filteredMembers.map((m, idx) => (
+               {[...filteredMembers].sort((a, b) => a["Employee Name"].localeCompare(b["Employee Name"])).map((m, idx) => (
                  <motion.div 
                    key={m["Employee Number"]} 
                    initial={{ opacity: 0, scale: 0.95 }}
