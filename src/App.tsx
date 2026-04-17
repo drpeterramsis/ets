@@ -35,7 +35,7 @@ import { sortWaves } from './utils/waveUtils';
 // Data and Types
 import employeeData from './data/employees.json';
 import type { Employee, ThemeMode } from './types';
-import { saveToGitHub } from './utils/githubSync';
+import { saveToGitHub, fetchFromGitHub } from './utils/githubSync';
 
 // ⭐ SUPERUSER IDs — add or remove Employee Numbers here
 const SUPERUSER_IDS = [
@@ -143,7 +143,15 @@ export default function App() {
       }
     }
     
-    setIsLoading(false);
+    // Sync latest data from GitHub if available
+    const syncData = async () => {
+      const latest = await fetchFromGitHub();
+      if (latest) {
+        setEmployees(latest);
+      }
+      setIsLoading(false);
+    };
+    syncData();
   }, []);
 
   const toggleTheme = () => {
@@ -177,7 +185,7 @@ export default function App() {
       return;
     }
 
-    const found = employeeData.find(emp => emp["Employee Number"] === trimmedId);
+    const found = employees.find(emp => emp["Employee Number"] === trimmedId);
     if (found) {
       setFoundEmployee(found as Employee);
       setLoginStep(2);
@@ -1095,4 +1103,4 @@ export default function App() {
   );
 }
 
-// v1.0.043
+// v1.0.044

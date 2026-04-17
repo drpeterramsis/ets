@@ -85,3 +85,32 @@ export const saveToGitHub = async (
     };
   }
 };
+
+export const fetchFromGitHub = async (): Promise<Employee[] | null> => {
+  const token = import.meta.env.VITE_GITHUB_TOKEN;
+  const repo = import.meta.env.VITE_GITHUB_REPO;
+  const filePath = import.meta.env.VITE_GITHUB_FILE_PATH;
+
+  if (!token || !repo || !filePath) return null;
+
+  const apiUrl = `https://api.github.com/repos/${repo}/contents/${filePath}`;
+
+  try {
+    const res = await fetch(apiUrl, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/vnd.github+json",
+      },
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      // Decode base64 content
+      const content = decodeURIComponent(escape(atob(data.content)));
+      return JSON.parse(content);
+    }
+  } catch (error) {
+    console.error("❌ GitHub fetch error:", error);
+  }
+  return null;
+};
