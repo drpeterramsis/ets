@@ -30,7 +30,15 @@ The application uses an external JSON file located at `src/data/employees.json`.
 - **Icons**: Lucide React
 
 ## Version History
-### v1.0.008 (Current)
+### v1.0.009 (Current)
+- **Profile card fully redesigned**: New horizontal layout with 5 distinct sections and unified accent styling.
+- **Wave Data Modularized**: Wave assignments split into separate WAVE DATE and WAVE TIME cards for clarity (split by helper logic).
+- **Role-Based DOM Enforcement**: Strict access matrix (Employee/Facilitator/Superuser) with complete removal of restricted sections from the DOM for employees.
+- **Navigation Enhancements**: Logout moved to a fixed, bottom-right floating pill button for universal access.
+- **Mobile Optimization**: Fixed sticky header to always ensure the "EVA SIM" title is persistent and visible.
+- **Font & Display Consistency**: Unified font-family (Outfit/Monospace) and sizes (10px labels, 22px values) across all tactics cards.
+
+### v1.0.008
 - **Superuser role added**: Dedicated access level for administrative oversight using specific Employee IDs.
 - **Role-Based Visibility Matrix**: Dashboard now dynamically adjusts based on 'employee', 'facilitator', or 'superuser' roles.
 - **Enhanced Profile Card**: Added Employee ID field at the top, styled with a professional monospace chip.

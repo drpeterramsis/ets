@@ -18,7 +18,8 @@ import {
   CheckCircle2,
   XCircle,
   Shield,
-  ArrowRight
+  ArrowRight,
+  Hash
 } from 'lucide-react';
 
 // Data and Types
@@ -35,6 +36,27 @@ const getRole = (employeeNumber: string): string => {
   if (employeeNumber === "000000") return "facilitator";
   if (SUPERUSER_IDS.includes(employeeNumber)) return "superuser";
   return "employee";
+};
+
+const splitWave = (wave: string): { date: string; time: string } => {
+  // Try splitting on " _ " first, then "_", then first " "
+  if (wave.includes(' _ ')) {
+    const parts = wave.split(' _ ');
+    return { date: parts[0].trim(), time: parts.slice(1).join(' _ ').trim() };
+  }
+  if (wave.includes('_')) {
+    const parts = wave.split('_');
+    return { date: parts[0].trim(), time: parts.slice(1).join('_').trim() };
+  }
+  // Split on first space only
+  const idx = wave.indexOf(' ');
+  if (idx !== -1) {
+    return { 
+      date: wave.substring(0, idx).trim(), 
+      time: wave.substring(idx + 1).trim() 
+    };
+  }
+  return { date: wave, time: '' };
 };
 
 export const getTeamIcon = (teamName: string): string => {
@@ -152,10 +174,17 @@ export default function App() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Universal Theme Toggle (Top Right) */}
-      <div className="fixed top-4 right-4 z-[100]">
-        <ThemeToggle theme={theme} onToggle={toggleTheme} />
-      </div>
+      {/* Universal Theme Toggle Moved logic - actually the MOD 3 and 4 refine this */}
+      
+      {/* Fixed Logout Button (Bottom Right) */}
+      {user && (
+        <button 
+          onClick={handleLogout}
+          className="fixed bottom-6 right-6 z-[999] px-5 py-2.5 bg-[#ffc000] text-black font-bold text-sm rounded-full shadow-[0_4px_16px_rgba(255,192,0,0.35)] hover:scale-105 hover:bg-[#e6ac00] active:scale-95 transition-all flex items-center gap-2"
+        >
+          <LogOut className="w-4 h-4" /> Logout
+        </button>
+      )}
 
       <AnimatePresence mode="wait">
         {!user ? (
@@ -245,22 +274,17 @@ export default function App() {
             className="flex-1 flex flex-col"
           >
             {/* Header / Nav */}
-            <header className="sticky top-0 z-50 bg-[var(--bg-main)]/80 backdrop-blur-md border-b border-[var(--border-color)]">
-               <div className="max-w-6xl mx-auto px-4 h-20 flex items-center justify-between">
+            <header className="sticky top-0 z-[100] bg-[var(--bg-main)] border-b border-[var(--border-color)]">
+               <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                     <div className="w-10 h-10 bg-[var(--accent-color)] rounded-xl flex items-center justify-center text-white shadow-lg">
-                        <LayoutDashboard className="w-5 h-5" />
-                     </div>
-                     <div className="hidden sm:block">
-                        <h1 className="font-display font-black text-xl leading-none">EVA SIM</h1>
-                        <p className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-[0.2em] mt-1">Version 1.0.008</p>
-                     </div>
+                     <h1 className="font-display font-black text-[#ffc000] text-lg sm:text-xl whitespace-nowrap">
+                        <span className="hidden sm:inline">EVA Training Simulation</span>
+                        <span className="sm:hidden">EVA SIM</span>
+                     </h1>
                   </div>
 
                   <div className="flex items-center gap-2">
-                     <button onClick={handleLogout} className="flex items-center gap-2 px-4 py-2 text-red-500 font-black text-xs hover:bg-red-500/10 rounded-xl transition-all">
-                        <LogOut className="w-4 h-4" /> <span className="hidden sm:inline">LOGOUT</span>
-                     </button>
+                     <ThemeToggle theme={theme} onToggle={toggleTheme} />
                   </div>
                </div>
             </header>
@@ -271,10 +295,10 @@ export default function App() {
                   <div className="space-y-1">
                      <div className="flex items-center gap-2">
                         <h2 className="text-3xl sm:text-4xl font-display font-black">
-                           Welcome, {user["Employee Name"].split(' ')[0]}! {user.role === 'superuser' ? '⭐' : '👋'}
+                           Welcome, {user.role === 'facilitator' ? 'Facilitator' : user["Employee Name"].split(' ')[0]}! {user.role === 'superuser' ? '⭐' : '👋'}
                         </h2>
                         {user.role === 'superuser' && (
-                           <span className="px-2 py-0.5 bg-[var(--accent-color)] text-black text-[10px] font-black uppercase rounded-full shadow-sm">
+                           <span className="px-2 py-0.5 bg-[#ffc000] text-black text-[10px] font-black uppercase rounded-full shadow-sm">
                               ⭐ Super User
                            </span>
                         )}
@@ -282,6 +306,7 @@ export default function App() {
                      <p className="text-[var(--text-secondary)] font-medium">Access your team simulations and training tracking.</p>
                   </div>
                   
+                  {(user.role === 'superuser' || user.role === 'facilitator') && (
                   <div className="flex bg-[var(--bg-card)] p-1 rounded-2xl border border-[var(--border-color)] shadow-sm self-start">
                      <button 
                         onClick={() => setActiveTab('drill')}
@@ -296,6 +321,7 @@ export default function App() {
                         <SearchIcon className="w-4 h-4" /> SEARCH ENGINE
                      </button>
                   </div>
+                  )}
                </div>
 
                {/* Profile Card */}
@@ -304,54 +330,75 @@ export default function App() {
                    initial={{ opacity: 0, y: 20 }}
                    animate={{ opacity: 1, y: 0 }}
                    transition={{ delay: 0.1 }}
-                   className="bg-[var(--bg-card)] border border-[var(--border-color)] rounded-[2.5rem] p-8 relative overflow-hidden"
+                   className="bg-[var(--bg-card)] border border-[#ffc000] rounded-[20px] p-5 sm:px-7 sm:py-5 flex flex-col md:flex-row items-center gap-6"
                  >
-                     <div className="absolute right-0 top-0 w-32 h-32 bg-[var(--accent-color)]/5 rounded-full -translate-y-1/2 translate-x-1/2" />
-                     
-                     <div className="flex flex-col lg:flex-row gap-8 items-start lg:items-center">
-                        <div className="flex flex-col sm:flex-row gap-6 items-center flex-1">
-                           <div className="w-20 h-20 bg-[var(--input-bg)] rounded-3xl flex items-center justify-center text-[var(--accent-color)] border-2 border-[var(--border-color)] shadow-inner">
-                              <UserIcon className="w-10 h-10" />
+                     {/* SECTION 1: Identity */}
+                     <div className="flex flex-col sm:flex-row items-center gap-6 flex-1 w-full">
+                        <div className="w-16 h-16 bg-transparent border-2 border-[#ffc000] rounded-xl flex items-center justify-center text-[#ffc000] shrink-0">
+                           <UserIcon className="w-8 h-8" />
+                        </div>
+                        <div className="space-y-1 text-center sm:text-left flex-1">
+                           <div className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-[var(--accent-color)]/10 border border-[#ffc000] rounded-full mb-1">
+                              <Hash className="w-3 h-3 text-[#ffc000]" />
+                              <p className="font-mono text-[#ffc000] text-[12px] font-bold leading-none uppercase">ID: {user["Employee Number"]}</p>
                            </div>
-                           <div className="space-y-1 text-center sm:text-left">
-                              <div className="inline-block px-2 py-0.5 bg-[var(--accent-color)]/10 border border-[var(--accent-color)]/40 rounded-md mb-2">
-                                 <p className="font-mono text-[var(--accent-color)] text-xs font-bold leading-none">🔢 ID: {user["Employee Number"]}</p>
-                              </div>
-                              <h3 className="text-2xl font-black uppercase tracking-tight">{user["Employee Name"]}</h3>
-                              <div className="flex flex-wrap items-center justify-center sm:justify-start gap-4">
-                                 <span className="flex items-center gap-2 text-xs font-bold text-[var(--text-secondary)]">
-                                    <Building2 className="w-3.5 h-3.5" /> {user.Division}
-                                 </span>
-                                 <span className="flex items-center gap-2 text-xs font-bold text-[var(--text-secondary)]">
-                                    <Users className="w-3.5 h-3.5" /> {user.Unit}
-                                 </span>
-                                 <span className="flex items-center gap-2 text-xs font-bold text-[var(--text-secondary)]">
-                                    <Briefcase className="w-3.5 h-3.5" /> {user.Title}
-                                 </span>
-                              </div>
+                           <h3 className="text-[20px] sm:text-[24px] font-display font-bold text-[var(--text-primary)] uppercase leading-tight">{user["Employee Name"]}</h3>
+                           <div className="flex flex-wrap items-center justify-center sm:justify-start gap-x-4 gap-y-1">
+                              <span className="flex items-center gap-1.5 text-[13px] font-medium text-[var(--text-secondary)]">
+                                 <Building2 className="w-3.5 h-3.5" /> {user.Unit}
+                              </span>
+                              <span className="flex items-center gap-1.5 text-[13px] font-medium text-[var(--text-secondary)]">
+                                 <Briefcase className="w-3.5 h-3.5" /> {user.Title}
+                              </span>
                            </div>
                         </div>
+                     </div>
 
-                        <div className="flex flex-wrap gap-4 w-full lg:w-auto">
-                           <div className="flex-1 lg:flex-initial bg-[var(--accent-color)]/10 border border-[var(--accent-color)]/20 px-4 py-2 rounded-2xl text-center min-w-[120px]">
-                              <p className="text-[9px] font-black text-[var(--accent-color)] uppercase tracking-widest mb-1">🏰 Kingdom</p>
-                              <p className="text-sm font-black text-[var(--accent-color)]">{user.Kingdom}</p>
-                           </div>
-                           <div className="flex-1 lg:flex-initial bg-[var(--accent-color)]/10 border border-[var(--accent-color)]/20 px-8 py-4 rounded-3xl text-center min-w-[140px]">
-                              <p className="text-[9px] font-black text-[var(--accent-color)] uppercase tracking-widest mb-1">Assigned Wave</p>
-                              <p className="text-lg font-black text-[var(--accent-color)]">{user.Wave.replace(/_/g, '⏰')}</p>
-                           </div>
-                           <div className="flex-1 lg:flex-initial bg-[var(--accent-color)]/10 border border-[var(--accent-color)]/20 px-8 py-4 rounded-3xl text-center min-w-[140px]">
-                              <p className="text-[9px] font-black text-[var(--accent-color)] uppercase tracking-widest mb-1">Tactical Team</p>
-                              <p className="text-lg font-black text-[var(--accent-color)]">{getTeamIcon(user.Team)} {user.Team}</p>
-                           </div>
+                     {/* DATA CARDS WRAPPER */}
+                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 w-full lg:w-auto items-stretch">
+                        {/* KINGDOM */}
+                        <div className="bg-[#ffc000]/7 border border-[#ffc000]/30 rounded-xl px-5 py-3 flex flex-col justify-center text-center min-w-[80px]">
+                            <div className="flex items-center justify-center gap-1 text-[#ffc000] text-[10px] font-semibold uppercase tracking-[0.12em] mb-1">
+                                <span>🏰</span> KINGDOM
+                            </div>
+                            <p className="text-[22px] sm:text-[28px] font-display font-bold text-[#ffc000] leading-none">{user.Kingdom}</p>
+                        </div>
+
+                        {/* WAVE DATE */}
+                        <div className="bg-[#ffc000]/7 border border-[#ffc000]/30 rounded-xl px-6 py-3 flex flex-col justify-center text-center min-w-[120px]">
+                            <div className="flex items-center justify-center gap-1 text-[#ffc000] text-[10px] font-semibold uppercase tracking-[0.12em] mb-1">
+                                <span>📅</span> WAVE DATE
+                            </div>
+                            <p className="text-[18px] sm:text-[22px] font-display font-bold text-[#ffc000] leading-none">
+                              {splitWave(user.Wave).date.replace(/⏰/g, '').trim()}
+                            </p>
+                        </div>
+
+                        {/* WAVE TIME */}
+                        <div className="bg-[#ffc000]/7 border border-[#ffc000]/30 rounded-xl px-6 py-3 flex flex-col justify-center text-center min-w-[120px]">
+                            <div className="flex items-center justify-center gap-1 text-[#ffc000] text-[10px] font-semibold uppercase tracking-[0.12em] mb-1">
+                                <span>⏰</span> WAVE TIME
+                            </div>
+                            <p className="text-[18px] sm:text-[22px] font-display font-bold text-[#ffc000] leading-none">
+                              {splitWave(user.Wave).time.trim()}
+                            </p>
+                        </div>
+
+                        {/* TACTICAL TEAM */}
+                        <div className="bg-[#ffc000]/7 border border-[#ffc000]/30 rounded-xl px-6 py-3 flex flex-col justify-center text-center min-w-[140px]">
+                            <div className="flex items-center justify-center gap-1 text-[#ffc000] text-[10px] font-semibold uppercase tracking-[0.12em] mb-1">
+                                <span>👥</span> TACTICAL TEAM
+                            </div>
+                            <p className="text-[18px] sm:text-[22px] font-display font-bold text-[#ffc000] leading-none whitespace-nowrap">
+                              {getTeamIcon(user.Team)} {user.Team}
+                            </p>
                         </div>
                      </div>
                  </motion.div>
                )}
 
                {/* Feature Tabs */}
-               {user.role !== 'employee' && (
+               {(user.role === 'facilitator' || user.role === 'superuser') && (
                  <div className="min-h-[400px]">
                     <AnimatePresence mode="wait">
                       {activeTab === 'drill' ? (

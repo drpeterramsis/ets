@@ -5,7 +5,7 @@ export const Footer = () => {
         Developed by Dr. Peter Ramsis<br /> Under Supervision of Training Department
       </p>
       <p className="text-[10px] text-[var(--text-secondary)] mt-1 opacity-50">
-        Version 1.0.008
+        Version 1.0.009
       </p>
     </footer>
   );
