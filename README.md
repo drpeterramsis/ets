@@ -30,6 +30,11 @@ The application uses an external JSON file located at `src/data/employees.json`.
 - **Icons**: Lucide React
 
 ## Version History
+### v1.0.003
+- Updated login flow: Now uses Employee ID only with a 2nd confirmation step (showing Name and Unit).
+- Updated employee data with new records and fields (Kingdom, Level).
+- Optimized dashboard display for new data structure.
+
 ### v1.0.002
 - Separated employee data into an external JSON file (`src/data/employees.json`) for easier management.
 - Updated version numbering across the application.

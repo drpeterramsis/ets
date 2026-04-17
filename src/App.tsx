@@ -21,14 +21,26 @@ import {
 // --- DATA SOURCE ---
 import employeeData from './data/employees.json';
 
-type Employee = typeof employeeData[0];
+type Employee = {
+  "Employee Number": string;
+  "Employee Name": string;
+  "Email Address": string | null;
+  "Division": string;
+  "Unit": string | null;
+  "Title": string;
+  "Level": string;
+  "Wave": string;
+  "Team": string;
+  "Kingdom": string;
+};
 
 export default function App() {
   const [user, setUser] = useState<Employee | null>(null);
-  const [email, setEmail] = useState('');
   const [empNumber, setEmpNumber] = useState('');
+  const [foundEmployee, setFoundEmployee] = useState<Employee | null>(null);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+  const [loginStep, setLoginStep] = useState<'id' | 'confirm'>('id');
 
   // Check for saved session on load
   useEffect(() => {
@@ -43,28 +55,40 @@ export default function App() {
     setIsLoading(false);
   }, []);
 
-  const handleLogin = (e: FormEvent) => {
+  const handleCheckId = (e: FormEvent) => {
     e.preventDefault();
     setError('');
 
-    const foundUser = employeeData.find(emp => 
-      emp["Email Address"].toLowerCase() === email.toLowerCase() && 
-      emp["Employee Number"] === empNumber
+    const emp = employeeData.find(emp => 
+      emp["Employee Number"] === empNumber.trim()
     );
 
-    if (foundUser) {
-      setUser(foundUser);
-      localStorage.setItem('employeeSession', JSON.stringify(foundUser));
+    if (emp) {
+      setFoundEmployee(emp as Employee);
+      setLoginStep('confirm');
     } else {
-      setError('Invalid credentials, please try again');
+      setError('Invalid Employee ID, please try again');
     }
+  };
+
+  const handleConfirmLogin = () => {
+    if (foundEmployee) {
+      setUser(foundEmployee);
+      localStorage.setItem('employeeSession', JSON.stringify(foundEmployee));
+    }
+  };
+
+  const handleCancel = () => {
+    setLoginStep('id');
+    setFoundEmployee(null);
   };
 
   const handleLogout = () => {
     localStorage.removeItem('employeeSession');
     setUser(null);
-    setEmail('');
+    setFoundEmployee(null);
     setEmpNumber('');
+    setLoginStep('id');
   };
 
   if (isLoading) {
@@ -84,7 +108,7 @@ export default function App() {
       <AnimatePresence mode="wait">
         {!user ? (
           <motion.div
-            key="login"
+            key="login-container"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
@@ -97,65 +121,92 @@ export default function App() {
                   <LayoutDashboard className="w-8 h-8 text-white" />
                 </div>
                 <h1 className="text-3xl font-display font-bold text-slate-900 tracking-tight">Wave Portal</h1>
-                <p className="text-slate-500 mt-2">Sign in to access your dashboard</p>
+                <p className="text-slate-500 mt-2">Access your personalized dashboard</p>
               </div>
 
-              {/* Login Card */}
-              <div className="bg-white p-8 rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100">
-                <form onSubmit={handleLogin} className="space-y-5">
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1.5 ml-1">Email Address</label>
-                    <div className="relative">
-                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-                      <input
-                        type="email"
-                        required
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="name@evapharma.com"
-                        className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all outline-none"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1.5 ml-1">Employee Number</label>
-                    <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-                      <input
-                        type="text"
-                        required
-                        value={empNumber}
-                        onChange={(e) => setEmpNumber(e.target.value)}
-                        placeholder="EMP000"
-                        className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all outline-none"
-                      />
-                    </div>
-                  </div>
-
-                  {error && (
-                    <motion.p 
-                      initial={{ opacity: 0, x: -10 }}
+              {/* Login Steps */}
+              <div className="bg-white p-8 rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100 min-h-[300px] flex flex-col justify-center">
+                <AnimatePresence mode="wait">
+                  {loginStep === 'id' ? (
+                    <motion.div
+                      key="step-id"
+                      initial={{ opacity: 0, x: 20 }}
                       animate={{ opacity: 1, x: 0 }}
-                      className="text-red-500 text-sm font-medium bg-red-50 p-3 rounded-lg border border-red-100"
+                      exit={{ opacity: 0, x: -20 }}
                     >
-                      {error}
-                    </motion.p>
-                  )}
+                      <form onSubmit={handleCheckId} className="space-y-5">
+                        <div>
+                          <label className="block text-sm font-medium text-slate-700 mb-1.5 ml-1">Employee ID</label>
+                          <div className="relative">
+                            <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                            <input
+                              type="text"
+                              required
+                              value={empNumber}
+                              onChange={(e) => setEmpNumber(e.target.value)}
+                              placeholder="Enter your Employee ID"
+                              className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all outline-none"
+                            />
+                          </div>
+                        </div>
 
-                  <button
-                    type="submit"
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3.5 rounded-xl shadow-lg shadow-blue-200 transition-all active:scale-[0.98] flex items-center justify-center gap-2 group"
-                  >
-                    Sign In
-                    <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                  </button>
-                </form>
+                        {error && (
+                          <motion.p 
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            className="text-red-500 text-sm font-medium bg-red-50 p-3 rounded-lg border border-red-100"
+                          >
+                            {error}
+                          </motion.p>
+                        )}
+
+                        <button
+                          type="submit"
+                          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3.5 rounded-xl shadow-lg shadow-blue-200 transition-all active:scale-[0.98] flex items-center justify-center gap-2 group"
+                        >
+                          Check ID
+                          <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                        </button>
+                      </form>
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key="step-confirm"
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -20 }}
+                      className="text-center space-y-6"
+                    >
+                      <div className="space-y-2">
+                        <p className="text-slate-500 text-sm font-medium uppercase tracking-wider">Is this you?</p>
+                        <h2 className="text-2xl font-bold text-slate-900">{foundEmployee?.["Employee Name"]}</h2>
+                        <div className="inline-block px-4 py-1.5 bg-blue-50 text-blue-700 rounded-full text-sm font-semibold">
+                          Unit: {foundEmployee?.["Unit"] || "N/A"}
+                        </div>
+                      </div>
+
+                      <div className="pt-4 space-y-3">
+                        <button
+                          onClick={handleConfirmLogin}
+                          className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3.5 rounded-xl shadow-lg shadow-green-200 transition-all active:scale-[0.98]"
+                        >
+                          Yes, it's me
+                        </button>
+                        <button
+                          onClick={handleCancel}
+                          className="w-full text-slate-400 hover:text-slate-600 font-medium py-2 transition-colors"
+                        >
+                          No, go back
+                        </button>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
 
               <p className="text-center text-slate-400 text-xs mt-8">
                 &copy; 2026 Eva Pharma. All rights reserved. <br/>
-                Version 1.0.002
+                Version 1.0.003
               </p>
             </div>
           </motion.div>
@@ -168,7 +219,7 @@ export default function App() {
             className="min-h-screen pb-12"
           >
             {/* Header */}
-            <header className="bg-white border-bottom border-slate-100 sticky top-0 z-10 shadow-sm">
+            <header className="bg-white border-b border-slate-100 sticky top-0 z-10 shadow-sm">
               <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
@@ -231,7 +282,7 @@ export default function App() {
                           <Users className="w-4 h-4" />
                           Unit
                         </div>
-                        <p className="text-slate-900 font-semibold text-lg">{user["Unit"]}</p>
+                        <p className="text-slate-900 font-semibold text-lg">{user["Unit"] || "N/A"}</p>
                       </div>
                       <div className="space-y-1">
                         <div className="flex items-center gap-2 text-slate-400 text-sm font-medium uppercase tracking-wider">
@@ -243,9 +294,9 @@ export default function App() {
                       <div className="space-y-1">
                         <div className="flex items-center gap-2 text-slate-400 text-sm font-medium uppercase tracking-wider">
                           <Mail className="w-4 h-4" />
-                          Email
+                          Kingdom
                         </div>
-                        <p className="text-slate-900 font-semibold">{user["Email Address"]}</p>
+                        <p className="text-slate-900 font-semibold text-lg">{user["Kingdom"]}</p>
                       </div>
                     </div>
                   </div>
@@ -262,7 +313,7 @@ export default function App() {
                     <Waves className="absolute -right-4 -bottom-4 w-32 h-32 text-blue-500/30 rotate-12 group-hover:scale-110 transition-transform duration-500" />
                     <div className="relative z-10">
                       <p className="text-blue-100 text-sm font-bold uppercase tracking-widest mb-2">Current Wave</p>
-                      <h3 className="text-4xl font-display font-black tracking-tight">{user["Wave"]}</h3>
+                      <h3 className="text-2xl font-display font-black tracking-tight leading-tight">{user["Wave"]}</h3>
                     </div>
                   </motion.div>
 
@@ -284,7 +335,7 @@ export default function App() {
 
             <footer className="max-w-5xl mx-auto px-4 mt-12 pt-8 border-t border-slate-200 text-center">
               <p className="text-slate-400 text-sm">
-                Eva Pharma Employee Wave Portal &bull; Version 1.0.002
+                Eva Pharma Employee Wave Portal &bull; Version 1.0.003
               </p>
             </footer>
           </motion.div>
