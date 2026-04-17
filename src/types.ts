@@ -1,3 +1,5 @@
+export type EmployeeRole = 'employee' | 'facilitator' | 'superuser';
+
 export type Employee = {
     "Employee Number": string;
     "Employee Name": string;
@@ -10,6 +12,7 @@ export type Employee = {
     "Kingdom": string;
     "Team": string;
     "Job"?: string;
+    "role"?: EmployeeRole;
 };
 
 export type ThemeMode = 'light' | 'dark';

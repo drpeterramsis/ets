@@ -25,6 +25,18 @@ import {
 import employeeData from './data/employees.json';
 import type { Employee, ThemeMode } from './types';
 
+// ⭐ SUPERUSER IDs — add or remove Employee Numbers here
+const SUPERUSER_IDS = [
+  "4369",
+  // add more IDs here easily
+];
+
+const getRole = (employeeNumber: string): string => {
+  if (employeeNumber === "000000") return "facilitator";
+  if (SUPERUSER_IDS.includes(employeeNumber)) return "superuser";
+  return "employee";
+};
+
 export const getTeamIcon = (teamName: string): string => {
   const name = teamName.toLowerCase().trim();
   if (name.includes('electric'))  return '⚡';
@@ -84,7 +96,27 @@ export default function App() {
   const handleStep1 = (e: FormEvent) => {
     e.preventDefault();
     setError('');
-    const found = employeeData.find(emp => emp["Employee Number"] === empNumber.trim());
+    const trimmedId = empNumber.trim();
+
+    if (trimmedId === "000000") {
+      setFoundEmployee({
+        "Employee Number": "000000",
+        "Employee Name": "Facilitator Access",
+        "Email Address": "admin@eva.com",
+        "Division": "Management",
+        "Unit": "Training",
+        "Title": "Facilitator",
+        "Level": "L1",
+        "Wave": "ALL_WAVES",
+        "Kingdom": "ALL",
+        "Team": "ALL",
+        "role": "facilitator"
+      } as Employee);
+      setLoginStep(2);
+      return;
+    }
+
+    const found = employeeData.find(emp => emp["Employee Number"] === trimmedId);
     if (found) {
       setFoundEmployee(found as Employee);
       setLoginStep(2);
@@ -95,8 +127,10 @@ export default function App() {
 
   const confirmLogin = () => {
     if (foundEmployee) {
-      setUser(foundEmployee);
-      localStorage.setItem('evaSession', JSON.stringify(foundEmployee));
+      const role = getRole(foundEmployee["Employee Number"]);
+      const userWithRole = { ...foundEmployee, role };
+      setUser(userWithRole);
+      localStorage.setItem('evaSession', JSON.stringify(userWithRole));
     }
   };
 
@@ -219,7 +253,7 @@ export default function App() {
                      </div>
                      <div className="hidden sm:block">
                         <h1 className="font-display font-black text-xl leading-none">EVA SIM</h1>
-                        <p className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-[0.2em] mt-1">Version 1.0.007</p>
+                        <p className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-[0.2em] mt-1">Version 1.0.008</p>
                      </div>
                   </div>
 
@@ -235,7 +269,16 @@ export default function App() {
                {/* Welcome Header */}
                <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
                   <div className="space-y-1">
-                     <h2 className="text-3xl sm:text-4xl font-display font-black">Welcome, {user["Employee Name"].split(' ')[0]}! 👋</h2>
+                     <div className="flex items-center gap-2">
+                        <h2 className="text-3xl sm:text-4xl font-display font-black">
+                           Welcome, {user["Employee Name"].split(' ')[0]}! {user.role === 'superuser' ? '⭐' : '👋'}
+                        </h2>
+                        {user.role === 'superuser' && (
+                           <span className="px-2 py-0.5 bg-[var(--accent-color)] text-black text-[10px] font-black uppercase rounded-full shadow-sm">
+                              ⭐ Super User
+                           </span>
+                        )}
+                     </div>
                      <p className="text-[var(--text-secondary)] font-medium">Access your team simulations and training tracking.</p>
                   </div>
                   
@@ -256,52 +299,62 @@ export default function App() {
                </div>
 
                {/* Profile Card */}
-               <motion.div 
-                 initial={{ opacity: 0, y: 20 }}
-                 animate={{ opacity: 1, y: 0 }}
-                 transition={{ delay: 0.1 }}
-                 className="bg-[var(--bg-card)] border border-[var(--border-color)] rounded-[2.5rem] p-8 relative overflow-hidden"
-               >
-                   <div className="absolute right-0 top-0 w-32 h-32 bg-[var(--accent-color)]/5 rounded-full -translate-y-1/2 translate-x-1/2" />
-                   
-                   <div className="flex flex-col lg:flex-row gap-8 items-start lg:items-center">
-                      <div className="flex flex-col sm:flex-row gap-6 items-center flex-1">
-                         <div className="w-20 h-20 bg-[var(--input-bg)] rounded-3xl flex items-center justify-center text-[var(--accent-color)] border-2 border-[var(--border-color)] shadow-inner">
-                            <UserIcon className="w-10 h-10" />
-                         </div>
-                         <div className="space-y-1 text-center sm:text-left">
-                            <h3 className="text-2xl font-black uppercase tracking-tight">{user["Employee Name"]}</h3>
-                            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-4">
-                               <span className="flex items-center gap-2 text-xs font-bold text-[var(--text-secondary)]">
-                                  <Building2 className="w-3.5 h-3.5" /> {user.Division}
-                               </span>
-                               <span className="flex items-center gap-2 text-xs font-bold text-[var(--text-secondary)]">
-                                  <Users className="w-3.5 h-3.5" /> {user.Unit}
-                               </span>
-                               <span className="flex items-center gap-2 text-xs font-bold text-[var(--text-secondary)]">
-                                  <Briefcase className="w-3.5 h-3.5" /> {user.Title}
-                               </span>
-                            </div>
-                         </div>
-                      </div>
+               {(user.role === 'employee' || user.role === 'superuser') && (
+                 <motion.div 
+                   initial={{ opacity: 0, y: 20 }}
+                   animate={{ opacity: 1, y: 0 }}
+                   transition={{ delay: 0.1 }}
+                   className="bg-[var(--bg-card)] border border-[var(--border-color)] rounded-[2.5rem] p-8 relative overflow-hidden"
+                 >
+                     <div className="absolute right-0 top-0 w-32 h-32 bg-[var(--accent-color)]/5 rounded-full -translate-y-1/2 translate-x-1/2" />
+                     
+                     <div className="flex flex-col lg:flex-row gap-8 items-start lg:items-center">
+                        <div className="flex flex-col sm:flex-row gap-6 items-center flex-1">
+                           <div className="w-20 h-20 bg-[var(--input-bg)] rounded-3xl flex items-center justify-center text-[var(--accent-color)] border-2 border-[var(--border-color)] shadow-inner">
+                              <UserIcon className="w-10 h-10" />
+                           </div>
+                           <div className="space-y-1 text-center sm:text-left">
+                              <div className="inline-block px-2 py-0.5 bg-[var(--accent-color)]/10 border border-[var(--accent-color)]/40 rounded-md mb-2">
+                                 <p className="font-mono text-[var(--accent-color)] text-xs font-bold leading-none">🔢 ID: {user["Employee Number"]}</p>
+                              </div>
+                              <h3 className="text-2xl font-black uppercase tracking-tight">{user["Employee Name"]}</h3>
+                              <div className="flex flex-wrap items-center justify-center sm:justify-start gap-4">
+                                 <span className="flex items-center gap-2 text-xs font-bold text-[var(--text-secondary)]">
+                                    <Building2 className="w-3.5 h-3.5" /> {user.Division}
+                                 </span>
+                                 <span className="flex items-center gap-2 text-xs font-bold text-[var(--text-secondary)]">
+                                    <Users className="w-3.5 h-3.5" /> {user.Unit}
+                                 </span>
+                                 <span className="flex items-center gap-2 text-xs font-bold text-[var(--text-secondary)]">
+                                    <Briefcase className="w-3.5 h-3.5" /> {user.Title}
+                                 </span>
+                              </div>
+                           </div>
+                        </div>
 
-                      <div className="flex flex-wrap gap-4 w-full lg:w-auto">
-                         <div className="flex-1 lg:flex-initial bg-[var(--accent-color)]/10 border border-[var(--accent-color)]/20 px-8 py-4 rounded-3xl text-center min-w-[140px]">
-                            <p className="text-[9px] font-black text-[var(--accent-color)] uppercase tracking-widest mb-1">Assigned Wave</p>
-                            <p className="text-lg font-black text-[var(--accent-color)]">{user.Wave.replace(/_/g, '⏰')}</p>
-                         </div>
-                         <div className="flex-1 lg:flex-initial bg-[var(--accent-color)]/10 border border-[var(--accent-color)]/20 px-8 py-4 rounded-3xl text-center min-w-[140px]">
-                            <p className="text-[9px] font-black text-[var(--accent-color)] uppercase tracking-widest mb-1">Tactical Team</p>
-                            <p className="text-lg font-black text-[var(--accent-color)]">{getTeamIcon(user.Team)} {user.Team}</p>
-                         </div>
-                      </div>
-                   </div>
-               </motion.div>
+                        <div className="flex flex-wrap gap-4 w-full lg:w-auto">
+                           <div className="flex-1 lg:flex-initial bg-[var(--accent-color)]/10 border border-[var(--accent-color)]/20 px-4 py-2 rounded-2xl text-center min-w-[120px]">
+                              <p className="text-[9px] font-black text-[var(--accent-color)] uppercase tracking-widest mb-1">🏰 Kingdom</p>
+                              <p className="text-sm font-black text-[var(--accent-color)]">{user.Kingdom}</p>
+                           </div>
+                           <div className="flex-1 lg:flex-initial bg-[var(--accent-color)]/10 border border-[var(--accent-color)]/20 px-8 py-4 rounded-3xl text-center min-w-[140px]">
+                              <p className="text-[9px] font-black text-[var(--accent-color)] uppercase tracking-widest mb-1">Assigned Wave</p>
+                              <p className="text-lg font-black text-[var(--accent-color)]">{user.Wave.replace(/_/g, '⏰')}</p>
+                           </div>
+                           <div className="flex-1 lg:flex-initial bg-[var(--accent-color)]/10 border border-[var(--accent-color)]/20 px-8 py-4 rounded-3xl text-center min-w-[140px]">
+                              <p className="text-[9px] font-black text-[var(--accent-color)] uppercase tracking-widest mb-1">Tactical Team</p>
+                              <p className="text-lg font-black text-[var(--accent-color)]">{getTeamIcon(user.Team)} {user.Team}</p>
+                           </div>
+                        </div>
+                     </div>
+                 </motion.div>
+               )}
 
                {/* Feature Tabs */}
-               <div className="min-h-[400px]">
-                  <AnimatePresence mode="wait">
-                    {activeTab === 'drill' ? (
+               {user.role !== 'employee' && (
+                 <div className="min-h-[400px]">
+                    <AnimatePresence mode="wait">
+                      {activeTab === 'drill' ? (
                        <motion.div key="drill" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
                           <div className="space-y-6">
                              <div className="pl-2">
@@ -324,6 +377,7 @@ export default function App() {
                     )}
                   </AnimatePresence>
                </div>
+               )}
             </main>
             <Footer />
           </motion.div>

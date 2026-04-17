@@ -30,7 +30,14 @@ The application uses an external JSON file located at `src/data/employees.json`.
 - **Icons**: Lucide React
 
 ## Version History
-### v1.0.007 (Current)
+### v1.0.008 (Current)
+- **Superuser role added**: Dedicated access level for administrative oversight using specific Employee IDs.
+- **Role-Based Visibility Matrix**: Dashboard now dynamically adjusts based on 'employee', 'facilitator', or 'superuser' roles.
+- **Enhanced Profile Card**: Added Employee ID field at the top, styled with a professional monospace chip.
+- **Branding Update**: Implemented unique welcome messages and badges (⭐) for superuser status.
+- **Navigation Polish**: Corrected facilitator login bypass for administrative accounts.
+
+### v1.0.007
 - **Black + Gold (#ffc000) theme applied**: Complete visual overhaul for institution branding.
 - **Enhanced Member Cards**: Added Unit, Title, and ID fields with professional labeling.
 - **Back Navigation Buttons**: Replaced text links with pill-shaped styled buttons at all drill-down levels.
