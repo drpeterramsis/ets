@@ -169,7 +169,6 @@ export const WaveStats: React.FC<WaveStatsProps> = ({ employees, userRole, onEdi
                     </div>
                     <div className={`text-[11px] font-medium opacity-60 ml-5 ${isLevel2 ? 'text-blue-600 dark:text-blue-300' : 'text-[#444444] dark:text-[#cccccc]'} mt-0.5 leading-tight`}>
                       {m["Title"]}{m["Unit"] ? ` • ${m["Unit"]}` : ''}
-                      {isLevel2 && <span className="ml-2 px-1 bg-blue-500/10 rounded text-[9px] font-black uppercase tracking-tighter">Level 2</span>}
                     </div>
                   </div>
                 );
